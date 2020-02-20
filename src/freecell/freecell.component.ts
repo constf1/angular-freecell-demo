@@ -1,4 +1,5 @@
 import { Component, OnInit, OnChanges, Input, SimpleChanges } from '@angular/core';
+import { Renderer2 } from '@angular/core';
 
 import { Dragger } from '../common/dragger';
 import { suitFullNameOf, rankFullNameOf, CARD_NUM } from '../common/deck';
@@ -30,9 +31,9 @@ export class FreecellComponent implements OnInit, OnChanges {
   spots: Item[] = [];
   cards: Item[] = [];
 
-  private dragger: Dragger;
+  private dragger: Dragger | null = null;
   
-  constructor() { }
+  constructor(private renderer: Renderer2) { }
 
   ngOnInit() {
   }
@@ -50,11 +51,57 @@ export class FreecellComponent implements OnInit, OnChanges {
   }
 
   onMouseDown(event: MouseEvent, index: number) {
-    console.log('Mousedown:', index);
+    // console.log('Mousedown:', index);
     if (event.button !== 0) {
       return;
     }
     event.preventDefault();
+    if (!this.dragger && index >= this.spots.length) {
+      const cardIndex = index - this.spots.length;
+      const tableau = this.game.asTablaeu(cardIndex);
+
+      this.dragger = new Dragger(event.screenX, event.screenY, this.renderer);
+      this.onDragStart(tableau);
+      this.dragger.onDrag = () => this.onDrag(tableau);
+      this.dragger.onDragEnd = (ev) => {
+        this.onDragEnd(tableau);
+
+        // const destination = this.findDestination(index, ev.clientX, ev.clientY);
+        // if (destination >= 0) {
+        //   const srcLine = this.game.lineMap[index - this.spotCount];
+        //   const dstLine = destination < this.spotCount ? destination : this.game.lineMap[destination - this.spotCount];
+        //   if (srcLine !== dstLine) {
+        //     this.playPath(this.game.getBestPath(tableau, dstLine));
+        //   }
+        // }
+
+        this.dragger = null;
+      };
+    }
+  }
+
+  onDragStart(tableau: Readonly<number[]>) {
+    for (let i = 0; i < tableau.length; i++) {
+      const card = this.cards[tableau[i]];
+      card.ngStyle.zIndex = CARD_NUM + i;
+      card.ngClass.dragged = true;
+    }
+  }
+
+  onDrag(tableau: Readonly<number[]>) {
+    for (const index of tableau) {
+      const card = this.cards[index];
+      card.ngStyle.transform = `translate(${this.dragger.deltaX}px, ${this.dragger.deltaY}px)`;
+    }
+  }
+
+  onDragEnd(tableau: Readonly<number[]>) {
+    for (const index of tableau) {
+      const card = this.cards[index];
+      card.ngStyle.zIndex = this.game.getOffset(index);
+      delete card.ngStyle.transform;
+      delete card.ngClass.dragged;
+    }
   }
 
   onDeal() {
@@ -137,6 +184,7 @@ export class FreecellComponent implements OnInit, OnChanges {
       const item = this.cards[line[i]];
       item.ngStyle.left = toPercent(pos.x, W);
       item.ngStyle.top = toPercent(pos.y, H);
+      item.ngStyle.zIndex = i;
     }
   }
 }
