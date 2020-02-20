@@ -30,7 +30,7 @@
 }
 
 .placeholder {
-  // background-color: lightblue;
+  background-color: lightblue;
 
   &.pile { @include bg_pos(57); }
   &.base { @include bg_rank(13); }
@@ -41,6 +41,7 @@
 }
 
 .card {
+  background-color: lightyellow;
   &.Ace { @include bg_rank(0); }
   &.Two { @include bg_rank(1); }
   &.Three { @include bg_rank(2); }
