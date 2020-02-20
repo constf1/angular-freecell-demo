@@ -22,7 +22,7 @@
 .placeholder, .card {
   position: absolute;
 
-  background-image: url('/assets/cards.svg');
+  background-image: url('/assets/cards.png');
   background-size: 800% 800%;
   background-repeat: no-repeat;
 
@@ -30,7 +30,7 @@
 }
 
 .placeholder {
-  // background-color: lightblue;
+  background-color: lightblue;
 
   &.pile { @include bg_pos(57); }
   &.base { @include bg_rank(13); }
