@@ -1,5 +1,6 @@
 import { Component, OnInit, OnChanges, Input, SimpleChanges } from '@angular/core';
 
+import { Dragger } from '../common/dragger';
 import { suitFullNameOf, rankFullNameOf, CARD_NUM } from '../common/deck';
 
 import { FreecellGame } from './freecell-game';
@@ -28,6 +29,8 @@ export class FreecellComponent implements OnInit, OnChanges {
   items: Item[] = [];
   spots: Item[] = [];
   cards: Item[] = [];
+
+  private dragger: Dragger;
   
   constructor() { }
 
