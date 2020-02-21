@@ -35,7 +35,7 @@
   &.pile { @include bg_pos(57); }
   &.base { @include bg_rank(13); }
   &.cell {
-    // background-color: lightseagreen;
+    background-color: lightseagreen;
     @include bg_pos(56);
   }
 }

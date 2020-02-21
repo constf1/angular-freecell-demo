@@ -13,6 +13,10 @@ export class FreecellGame extends FreecellBasis {
     }
   }
 
+  getLineIndex(cardIndex: number) {
+    return this.lineMap[cardIndex];
+  }
+
   getOffset(cardIndex: number) {
     return this.offsetMap[cardIndex];
   }

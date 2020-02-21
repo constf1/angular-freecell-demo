@@ -1,45 +1,57 @@
-import { Component, OnInit, OnChanges, Input, SimpleChanges } from '@angular/core';
-import { Renderer2 } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnChanges,
+  Input,
+  SimpleChanges,
+  ViewChildren,
+  QueryList,
+  ElementRef
+} from "@angular/core";
+import { Renderer2 } from "@angular/core";
 
-import { Dragger } from '../common/dragger';
-import { suitFullNameOf, rankFullNameOf, CARD_NUM } from '../common/deck';
+import { Dragger } from "../common/dragger";
+import { suitFullNameOf, rankFullNameOf, CARD_NUM } from "../common/deck";
 
-import { FreecellGame } from './freecell-game';
-import { FreecellLayout } from './freecell-layout';
+import { FreecellGame } from "./freecell-game";
+import { FreecellLayout } from "./freecell-layout";
 
-function toPercent(numerator: number, denominator: number = 100, fractionDigits: number = 3): string {
-  return (numerator * 100 / denominator).toFixed(fractionDigits) + '%';
+function toPercent(
+  numerator: number,
+  denominator: number = 100,
+  fractionDigits: number = 3
+): string {
+  return ((numerator * 100) / denominator).toFixed(fractionDigits) + "%";
 }
 
 interface Item {
-  ngStyle: { [klass: string]: any; };
-  ngClass: { [klass: string]: any; };
+  ngStyle: { [klass: string]: any };
+  ngClass: { [klass: string]: any };
 }
 
 @Component({
-  selector: 'app-freecell',
-  templateUrl: './freecell.component.html',
-  styleUrls: ['./freecell.component.scss']
+  selector: "app-freecell",
+  templateUrl: "./freecell.component.html",
+  styleUrls: ["./freecell.component.scss"]
 })
 export class FreecellComponent implements OnInit, OnChanges {
-  @Input()
-  game: FreecellGame;
-  @Input()
-  layout: FreecellLayout;
+  @Input() game: FreecellGame;
+  @Input() layout: FreecellLayout;
+
+  @ViewChildren("elements") elementList: QueryList<ElementRef<HTMLElement>>;
 
   items: Item[] = [];
   spots: Item[] = [];
   cards: Item[] = [];
 
   private dragger: Dragger | null = null;
-  
-  constructor(private renderer: Renderer2) { }
 
-  ngOnInit() {
-  }
+  constructor(private renderer: Renderer2) {}
+
+  ngOnInit() {}
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('app-freecell.ngOnChanges', changes);
+    console.log("app-freecell.ngOnChanges", changes);
     this.spots = this.createSpots();
     this.cards = this.createCards();
     this.items = this.spots.concat(this.cards);
@@ -63,17 +75,23 @@ export class FreecellComponent implements OnInit, OnChanges {
       this.dragger = new Dragger(event.screenX, event.screenY, this.renderer);
       this.onDragStart(tableau);
       this.dragger.onDrag = () => this.onDrag(tableau);
-      this.dragger.onDragEnd = (ev) => {
+      this.dragger.onDragEnd = ev => {
         this.onDragEnd(tableau);
 
-        // const destination = this.findDestination(index, ev.clientX, ev.clientY);
-        // if (destination >= 0) {
-        //   const srcLine = this.game.lineMap[index - this.spotCount];
-        //   const dstLine = destination < this.spotCount ? destination : this.game.lineMap[destination - this.spotCount];
-        //   if (srcLine !== dstLine) {
-        //     this.playPath(this.game.getBestPath(tableau, dstLine));
-        //   }
-        // }
+        const destination = this.findDestination(index, ev.clientX, ev.clientY);
+        if (destination >= 0) {
+          const srcLine = this.game.getLineIndex(cardIndex);
+          const dstLine =
+            destination < this.spots.length
+              ? destination
+              : this.game.getLineIndex(destination - this.spots.length);
+          console.log('Source:', srcLine);
+          if (srcLine !== dstLine) {
+            //     this.playPath(this.game.getBestPath(tableau, dstLine));
+            console.log('Move cards', tableau);
+            console.log('Destination:', dstLine);
+          }
+        }
 
         this.dragger = null;
       };
@@ -91,7 +109,9 @@ export class FreecellComponent implements OnInit, OnChanges {
   onDrag(tableau: Readonly<number[]>) {
     for (const index of tableau) {
       const card = this.cards[index];
-      card.ngStyle.transform = `translate(${this.dragger.deltaX}px, ${this.dragger.deltaY}px)`;
+      card.ngStyle.transform = `translate(${this.dragger.deltaX}px, ${
+        this.dragger.deltaY
+      }px)`;
     }
   }
 
@@ -105,7 +125,7 @@ export class FreecellComponent implements OnInit, OnChanges {
   }
 
   onDeal() {
-    for (let i = this.game.DESK_SIZE; i-- > 0;) {
+    for (let i = this.game.DESK_SIZE; i-- > 0; ) {
       this.updateLine(i);
     }
   }
@@ -142,7 +162,6 @@ export class FreecellComponent implements OnInit, OnChanges {
 
         placeholders.push(item);
       }
-
     }
     return placeholders;
   }
@@ -166,7 +185,11 @@ export class FreecellComponent implements OnInit, OnChanges {
 
         const item: Item = {
           ngStyle: { left, top, width, height },
-          ngClass: { card: true, [suitFullNameOf(i)]: true, [rankFullNameOf(i)]: true }
+          ngClass: {
+            card: true,
+            [suitFullNameOf(i)]: true,
+            [rankFullNameOf(i)]: true
+          }
         };
         cards.push(item);
       }
@@ -186,5 +209,26 @@ export class FreecellComponent implements OnInit, OnChanges {
       item.ngStyle.top = toPercent(pos.y, H);
       item.ngStyle.zIndex = i;
     }
+  }
+
+  findDestination(source: number, clientX: number, clientY: number): number {
+    if (this.elementList) {
+      const children = this.elementList.toArray();
+      for (let i = children.length; i-- > 0; ) {
+        if (i !== source) {
+          const rc = children[i].nativeElement.getBoundingClientRect();
+          if (
+            rc.left <= clientX &&
+            clientX <= rc.right &&
+            rc.top <= clientY &&
+            clientY <= rc.bottom
+          ) {
+            console.log("Collision at: " + i);
+            return i;
+          }
+        }
+      }
+    }
+    return -1;
   }
 }
