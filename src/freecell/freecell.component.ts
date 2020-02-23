@@ -85,11 +85,15 @@ export class FreecellComponent implements OnInit, OnChanges {
             destination < this.spots.length
               ? destination
               : this.game.getLineIndex(destination - this.spots.length);
-          console.log('Source:', srcLine);
+          // console.log('Source:', srcLine);
           if (srcLine !== dstLine) {
             //     this.playPath(this.game.getBestPath(tableau, dstLine));
-            console.log('Move cards', tableau);
+            console.log('Move cards:', tableau);
             console.log('Destination:', dstLine);
+            const path = this.game.getBestPath(tableau, dstLine);
+            if (path) {
+              console.log('Path:', path.charCodeAt(0), path.charCodeAt(1));
+            }
           }
         }
 
