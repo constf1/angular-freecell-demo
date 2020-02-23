@@ -4,6 +4,21 @@ import { copy, endsWith } from '../common/array-utils';
 import { FreecellBasis } from "./freecell-basis";
 import { Filter, FreecellSolver, FreecellSolution } from './freecell-solver';
 
+// Swaps source and destination in the path
+function swap(path: string, source: number, destination: number) {
+  const buf: number[] = [];
+  for (let i = 0; i < path.length; i++) {
+    let x = path.charCodeAt(i);
+    if (x === destination) {
+      x = source;
+    } else if (x === source) {
+      x = destination;
+    }
+    buf.push(x);
+  }
+  return String.fromCharCode(...buf);
+}
+
 export class FreecellGame extends FreecellBasis {
   private readonly desk: number[][] = [];
   private readonly lineMap: number[] = [];
@@ -185,7 +200,15 @@ export class FreecellGame extends FreecellBasis {
     };
 
     if (solver.solve(cardFilter)) {
-      return solver.getPath();
+      // return solver.getPath();
+      let path = solver.getPath();
+      const d = path.charCodeAt(path.length - 1);
+      if (d !== destination) {
+        console.log('Swapping destinations:', destination, d);
+        path = swap(path, destination, d);
+      }
+
+      return path;
     }
 
     return '';
