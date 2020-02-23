@@ -5,6 +5,7 @@ export type Filter = { [card: number]: boolean; } | boolean[];
 export type Desk = Readonly<Readonly<number[]>[]>;
 
 export class FreecellSolution {
+  constructor(public success: boolean) {}
 }
 
 export class FreecellSolver extends FreecellBasis {
@@ -22,11 +23,7 @@ export class FreecellSolver extends FreecellBasis {
   }
 
   stop(success: boolean) {
-    if (success) {
-      throw new FreecellSolution();
-    } else {
-      throw new Error('search has been stopped');
-    }
+    throw new FreecellSolution(success);
   }
 
   getPath(): string {
@@ -42,7 +39,7 @@ export class FreecellSolver extends FreecellBasis {
     this.path = '';
   }
 
-  solve(cardFilter?: Filter): FreecellSolution | undefined {
+  solve(cardFilter?: Filter): boolean {
     this.clear();
     this.done.add(this.toKey(this.desk));
     this.buffers[0][0] = '';
@@ -63,11 +60,12 @@ export class FreecellSolver extends FreecellBasis {
       }
     } catch (e) {
       if (e instanceof FreecellSolution) {
-        return e;
+        return e.success;
       } else {
         throw e;  // re-throw the error unchanged
       }
     }
+    return false;
   }
 
   skipForward(path: string) {
