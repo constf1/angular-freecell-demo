@@ -92,7 +92,10 @@ export class FreecellComponent implements OnInit, OnChanges {
             console.log('Destination:', dstLine);
             const path = this.game.getBestPath(tableau, dstLine);
             if (path) {
-              console.log('Path:', path.charCodeAt(0), path.charCodeAt(1));
+              console.log('Path:', path.length);
+              this.game.moveCard(path.charCodeAt(0), path.charCodeAt(1));
+              this.updateLine(path.charCodeAt(0));
+              this.updateLine(path.charCodeAt(1));
             }
           }
         }
