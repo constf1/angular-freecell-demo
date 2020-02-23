@@ -1,7 +1,5 @@
-import { CARD_NUM, suitOf, indexOf, rankOf, isTableau, SUIT_NUM } from '../common/deck';
-import { clear, copy } from '../common/array-utils';
-
 import { FreecellBasis } from './freecell-basis';
+import { CARD_NUM, suitOf, rankOf, isTableau, SUIT_NUM } from '../common/deck';
 
 export type Filter = { [card: number]: boolean; } | boolean[];
 export type Desk = Readonly<Readonly<number[]>[]>;
@@ -10,32 +8,25 @@ export class FreecellSolution {
 }
 
 export class FreecellSolver extends FreecellBasis {
-  private readonly done = new Map<string, string>();
+  private readonly done = new Set<string>();
   private readonly buffers: string[][] = [[], []];
   private iteration = 0;
+  private path = '';
 
   // Default implementation just throws a solution object.
-  onMove: (card: number, source: number, destination: number) => void = (card: number, source: number, destination: number) => {
-    throw new FreecellSolution();
-  }
+  onMove: (card: number, source: number, destination: number) => void = (card: number, source: number, destination: number) => this.stop();
 
   constructor(pileNum: number, cellNum: number, baseNum: number, public desk: number[][]) {
     super(pileNum, cellNum, baseNum);
   }
 
-  getPath(): string {
-    const desk = copy(this.desk);
-    let path = '';
-    // tslint:disable-next-line: no-conditional-assignment
-    for (let move: string; !!(move = this.done.get(this.toKey(desk)));) {
-      path = move + path;
+  stop() {
+    throw new FreecellSolution();
+  }
 
-      const source = move.charCodeAt(0);
-      const destination = move.charCodeAt(1);
-      // move destination => source
-      desk[source].push(desk[destination].pop());
-    }
-    return path;
+  getPath(): string {
+    const output = this.buffers[this.iteration % 2];
+    return output[output.length - 1];
   }
 
   clear() {
@@ -43,20 +34,23 @@ export class FreecellSolver extends FreecellBasis {
     this.buffers[0].length = 0;
     this.buffers[1].length = 0;
     this.iteration = 0;
+    this.path = '';
   }
 
   solve(cardFilter?: Filter): FreecellSolution | undefined {
     this.clear();
-    this.done.set(this.buffers[0][0] = this.toKey(this.desk), '');
+    this.done.add(this.toKey(this.desk));
+    this.buffers[0][0] = '';
 
     try {
       for (let input: string[]; (input = this.buffers[this.iteration % 2]).length > 0;) {
         this.iteration++;
         // const output = this.buffers[this.iteration % 2];
 
-        for (const key of input) {
-          this.fromKey(key, this.desk);
+        for (const path of input) {
+          this.skipForward(path);
           this.findMoves(cardFilter);
+          this.skipBackward();
         }
 
         // clear input
@@ -71,12 +65,29 @@ export class FreecellSolver extends FreecellBasis {
     }
   }
 
+  skipForward(path: string) {
+    for (let i = 0; i < path.length; i += 2) {
+      // move source => destination
+      this.desk[path.charCodeAt(i + 1)].push(this.desk[path.charCodeAt(i)].pop());
+    }
+    this.path = path;
+  }
+
+  skipBackward() {
+    const path = this.path;
+    for (let i = path.length; i > 0; i -= 2) {
+      // move destination => source
+      this.desk[path.charCodeAt(i - 2)].push(this.desk[path.charCodeAt(i - 1)].pop());
+    }
+    // this.path = '';
+  }
+
   move(card: number, source: number, destination: number) {
     this.desk[destination].push(this.desk[source].pop());
     const key = this.toKey(this.desk);
     if (!this.done.has(key)) {
-      this.done.set(key, String.fromCharCode(source, destination));
-      this.buffers[this.iteration % 2].push(key);
+      this.done.add(key);
+      this.buffers[this.iteration % 2].push(this.path + String.fromCharCode(source, destination));
 
       this.onMove(card, source, destination);
     }
@@ -147,42 +158,6 @@ export class FreecellSolver extends FreecellBasis {
 
   toKey(desk: Desk) {
     return this.baseToString(desk) + this.pileToString(desk);
-  }
-
-  fromKey(key: string, desk: number[][]) {
-    clear(desk);
-    const cards: number[] = [];
-
-    // Fill bases.
-    for (let i = 0; i < this.BASE_NUM; i++) {
-      const length = key.charCodeAt(i);
-      const s = suitOf(i);
-      const line = desk[this.BASE_START + i];
-      for (let j = 0; j < length; j++) {
-        const card = indexOf(s, j);
-        line.push(card);
-        cards[card] = 1;
-      }
-    }
-
-    // Fill piles.
-    for (let i = this.BASE_NUM, pile = this.PILE_START; i < key.length; i++) {
-      const card = key.charCodeAt(i);
-      if (card < CARD_NUM) {
-        desk[pile].push(card);
-        cards[card] = 1;
-      } else {
-        pile++;
-      }
-    }
-
-    // Fill cells.
-    for (let i = 0, cell = this.CELL_START; i < CARD_NUM; i++) {
-      if (!cards[i]) {
-        desk[cell].push(i);
-        cell++;
-      }
-    }
   }
 
   getEmptyCell(): number {

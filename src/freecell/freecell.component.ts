@@ -92,10 +92,12 @@ export class FreecellComponent implements OnInit, OnChanges {
             console.log('Destination:', dstLine);
             const path = this.game.getBestPath(tableau, dstLine);
             if (path) {
-              console.log('Path:', path.length);
-              this.game.moveCard(path.charCodeAt(0), path.charCodeAt(1));
-              this.updateLine(path.charCodeAt(0));
-              this.updateLine(path.charCodeAt(1));
+              console.log('Path:', path.length / 2);
+              for (let i = 0; i < path.length; i+=2) {
+                if (!this.moveCard(path.charCodeAt(i), path.charCodeAt(i + 1))) {
+                  break;
+                }
+              }
             }
           }
         }
@@ -135,6 +137,17 @@ export class FreecellComponent implements OnInit, OnChanges {
     for (let i = this.game.DESK_SIZE; i-- > 0; ) {
       this.updateLine(i);
     }
+  }
+
+  moveCard(source: number, destination: number) {
+    if (this.game.moveCard(source, destination)) {
+      this.updateLine(source);
+      this.updateLine(destination);
+      return true;
+    } else {
+      console.warn('Invalid Move:', source, destination);
+    }
+    return false;
   }
 
   createSpots(): Item[] {
