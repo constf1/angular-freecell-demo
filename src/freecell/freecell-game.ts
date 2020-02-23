@@ -191,16 +191,24 @@ export class FreecellGame extends FreecellBasis {
       }
     }
 
+    const startTime = Date.now();
+
     const cardFilter: Filter = tableau.reduce((obj, key) => { obj[key] = true; return obj; }, {});
     const solver = new FreecellSolver(this.PILE_NUM, this.CELL_NUM, this.BASE_NUM, copy(this.desk));
     solver.onMove = (card: number, src: number, dst: number) => {
       if (card === lastCard && destinationFilter[dst] && endsWith(solver.desk[dst], tableau)) {
-        solver.stop();
+        solver.stop(true);
+      } else {
+        if (Date.now() - startTime > 500) {
+          // It's time to stop the search.
+          console.log('Oops! Search timeout!');
+          solver.stop(false);
+        }
       }
     };
 
     if (solver.solve(cardFilter)) {
-      // return solver.getPath();
+      console.log('Search time: ' + (Date.now() - startTime));
       let path = solver.getPath();
       const d = path.charCodeAt(path.length - 1);
       if (d !== destination) {
@@ -211,6 +219,7 @@ export class FreecellGame extends FreecellBasis {
       return path;
     }
 
+    console.log('Full search time: ' + (Date.now() - startTime));
     return '';
   }
 }

@@ -14,14 +14,19 @@ export class FreecellSolver extends FreecellBasis {
   private path = '';
 
   // Default implementation just throws a solution object.
-  onMove: (card: number, source: number, destination: number) => void = (card: number, source: number, destination: number) => this.stop();
+  onMove: (card: number, source: number, destination: number) => void =
+   (card: number, source: number, destination: number) => this.stop(true);
 
   constructor(pileNum: number, cellNum: number, baseNum: number, public desk: number[][]) {
     super(pileNum, cellNum, baseNum);
   }
 
-  stop() {
-    throw new FreecellSolution();
+  stop(success: boolean) {
+    if (success) {
+      throw new FreecellSolution();
+    } else {
+      throw new Error('search has been stopped');
+    }
   }
 
   getPath(): string {
