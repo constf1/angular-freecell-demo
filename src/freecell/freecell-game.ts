@@ -179,7 +179,7 @@ export class FreecellGame extends FreecellBasis {
     const cardFilter: Filter = tableau.reduce((obj, key) => { obj[key] = true; return obj; }, {});
     const solver = new FreecellSolver(this.PILE_NUM, this.CELL_NUM, this.BASE_NUM, copy(this.desk));
     solver.onMove = (card: number, src: number, dst: number) => {
-      if (card === lastCard && destinationFilter[dst] && endsWith(solver.desk[destination], tableau)) {
+      if (card === lastCard && destinationFilter[dst] && endsWith(solver.desk[dst], tableau)) {
         solver.stop();
       }
     };
