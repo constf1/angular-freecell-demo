@@ -9,6 +9,9 @@ export class FreecellSolution {
 }
 
 export class FreecellSolver extends FreecellBasis {
+  cardFilter?: Filter;
+  destinationFilter?: Filter;
+
   private readonly done = new Set<string>();
   private readonly buffers: string[][] = [[], []];
   private iteration = 0;
@@ -39,7 +42,7 @@ export class FreecellSolver extends FreecellBasis {
     this.path = '';
   }
 
-  solve(cardFilter?: Filter): boolean {
+  solve(): boolean {
     this.clear();
     this.done.add(this.toKey(this.desk));
     this.buffers[0][0] = '';
@@ -51,7 +54,7 @@ export class FreecellSolver extends FreecellBasis {
 
         for (const path of input) {
           this.skipForward(path);
-          this.findMoves(cardFilter);
+          this.findMoves();
           this.skipBackward();
         }
 
@@ -92,12 +95,16 @@ export class FreecellSolver extends FreecellBasis {
       this.done.add(key);
       this.buffers[this.iteration % 2].push(this.path + String.fromCharCode(source, destination));
 
-      this.onMove(card, source, destination);
+      if ((!this.cardFilter || this.cardFilter[card]) &&
+        (!this.destinationFilter || this.destinationFilter[destination])) {
+        this.onMove(card, source, destination);
+      }
     }
     this.desk[source].push(this.desk[destination].pop());
   }
 
-  findMoves(cardFilter?: Filter) {
+  findMoves() {
+    const cardFilter = this.cardFilter;
     const emptyCell = this.getEmptyCell();
     const emptyPile = this.getEmptyPile();
 

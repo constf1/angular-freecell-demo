@@ -181,22 +181,21 @@ export class FreecellGame extends FreecellBasis {
       return this.isMoveValid(source, destination) ? String.fromCharCode(source, destination) : '';
     }
 
-    const destinationFilter: Filter = { [destination]: true };
+    const startTime = Date.now();
+
+    const solver = new FreecellSolver(this.PILE_NUM, this.CELL_NUM, this.BASE_NUM, copy(this.desk));
+    solver.cardFilter = tableau.reduce((obj, key) => { obj[key] = true; return obj; }, {});
+    solver.destinationFilter = { [destination]: true };
     if (this.isPile(destination) && this.getLine(destination).length === 0) {
       // any empty pile is good as destination.
       for (let i = this.PILE_START; i < this.PILE_END; i++) {
         if (this.getLine(i).length === 0) {
-          destinationFilter[i] = true;
+          solver.destinationFilter[i] = true;
         }
       }
     }
-
-    const startTime = Date.now();
-
-    const cardFilter: Filter = tableau.reduce((obj, key) => { obj[key] = true; return obj; }, {});
-    const solver = new FreecellSolver(this.PILE_NUM, this.CELL_NUM, this.BASE_NUM, copy(this.desk));
     solver.onMove = (card: number, src: number, dst: number) => {
-      if (card === lastCard && destinationFilter[dst] && endsWith(solver.desk[dst], tableau)) {
+      if (card === lastCard && endsWith(solver.desk[dst], tableau)) {
         solver.stop(true);
       } else {
         if (Date.now() - startTime > 500) {
@@ -207,7 +206,7 @@ export class FreecellGame extends FreecellBasis {
       }
     };
 
-    if (solver.solve(cardFilter)) {
+    if (solver.solve()) {
       console.log('Search time: ' + (Date.now() - startTime));
       let path = solver.getPath();
       const d = path.charCodeAt(path.length - 1);
