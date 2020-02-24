@@ -44,7 +44,7 @@ export class FreecellSolver extends FreecellBasis {
 
   solve(): boolean {
     this.clear();
-    this.done.add(this.toKey(this.desk));
+    this.done.add(this.toKey());
     this.buffers[0][0] = '';
 
     try {
@@ -67,6 +67,8 @@ export class FreecellSolver extends FreecellBasis {
       } else {
         throw e;  // re-throw the error unchanged
       }
+    } finally {
+      console.log('Searched:', this.done.size);
     }
     return false;
   }
@@ -89,8 +91,9 @@ export class FreecellSolver extends FreecellBasis {
   }
 
   move(card: number, source: number, destination: number) {
+    // move source => destination
     this.desk[destination].push(this.desk[source].pop());
-    const key = this.toKey(this.desk);
+    const key = this.toKey();
     if (!this.done.has(key)) {
       this.done.add(key);
       this.buffers[this.iteration % 2].push(this.path + String.fromCharCode(source, destination));
@@ -100,6 +103,7 @@ export class FreecellSolver extends FreecellBasis {
         this.onMove(card, source, destination);
       }
     }
+    // move destination => source
     this.desk[source].push(this.desk[destination].pop());
   }
 
@@ -149,25 +153,25 @@ export class FreecellSolver extends FreecellBasis {
     }
   }
 
-  baseToString(desk: Desk): string {
+  baseToString(): string {
     let buf = '';
     for (let i = this.BASE_START; i < this.BASE_END; i++) {
-      buf += String.fromCharCode(desk[i].length);
+      buf += String.fromCharCode(this.desk[i].length);
     }
     return buf;
   }
 
-  pileToString(desk: Desk): string {
+  pileToString(): string {
     const arr = [];
     for (let i = this.PILE_START; i < this.PILE_END; i++) {
-      arr.push(String.fromCharCode(...desk[i]));
+      arr.push(String.fromCharCode(...this.desk[i]));
     }
     arr.sort();
     return arr.join(String.fromCharCode(CARD_NUM));
   }
 
-  toKey(desk: Desk) {
-    return this.baseToString(desk) + this.pileToString(desk);
+  toKey() {
+    return this.baseToString() + this.pileToString();
   }
 
   getEmptyCell(): number {
