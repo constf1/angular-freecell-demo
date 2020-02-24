@@ -78,6 +78,8 @@ export class FreecellComponent implements OnInit, OnChanges {
       this.dragger.onDragEnd = ev => {
         this.onDragEnd(tableau);
 
+        let path = '';
+
         if (this.dragger.dragged) {
           const destination = this.findDestination(index, ev.clientX, ev.clientY);
           if (destination >= 0) {
@@ -91,22 +93,24 @@ export class FreecellComponent implements OnInit, OnChanges {
               //     this.playPath(this.game.getBestPath(tableau, dstLine));
               // console.log('Move cards:', tableau);
               // console.log('Destination:', dstLine);
-              const path = this.game.getBestPath(tableau, dstLine);
-              if (path) {
-                console.log('Path:', path.length / 2);
-                for (let i = 0; i < path.length; i+=2) {
-                  if (!this.moveCard(path.charCodeAt(i), path.charCodeAt(i + 1))) {
-                    break;
-                  }
-                }
-              }
+              path = this.game.getBestPath(tableau, dstLine);
             }
           }
         } else {
-          // TODO: Find best move for source.
+          // TODO: Find best move for the source line.
+          const srcLine = this.game.getLineIndex(cardIndex);
+          path = this.game.solveFor(srcLine);
         }
 
         this.dragger = null;
+        if (path) {
+          console.log('Path:', path.length / 2);
+          for (let i = 0; i < path.length; i+=2) {
+            if (!this.moveCard(path.charCodeAt(i), path.charCodeAt(i + 1))) {
+              break;
+            }
+          }
+        }
       };
     }
   }

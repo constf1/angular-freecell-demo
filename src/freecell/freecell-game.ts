@@ -221,4 +221,35 @@ export class FreecellGame extends FreecellBasis {
     console.log('Full search time: ' + (Date.now() - startTime));
     return '';
   }
+
+  solveFor(source: number): string {
+    // Validity checks:
+    if (this.desk[source].length <= 0) {
+      return '';
+    }
+
+    const solver = new FreecellSolver(this.PILE_NUM, this.CELL_NUM, this.BASE_NUM, copy(this.desk));
+
+    // Handle one card case.
+    let bestPath = '';
+    let cardCount = 0;
+
+    const lastCard = this.getCard(source, -1);
+    solver.cardFilter = {[lastCard]: true};
+    solver.onMove = (card: number, src: number, dst: number) => {
+      if (!bestPath) {
+        bestPath = solver.getPath();
+        cardCount = 1;
+      }
+    }
+    solver.findMoves();
+
+    // Handle a tableau.
+    const tableau = this.getTableauAt(source);
+    if (tableau.length <= 1) {
+      return bestPath;
+    }
+    
+    return bestPath;
+  }
 }

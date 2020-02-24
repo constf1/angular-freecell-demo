@@ -17,14 +17,15 @@ export class FreecellSolver extends FreecellBasis {
   private iteration = 0;
   private path = '';
 
-  // Default implementation just throws a solution object.
+  // Default do-nothing implementation.
   onMove: (card: number, source: number, destination: number) => void =
-   (card: number, source: number, destination: number) => this.stop(true);
+   (card: number, source: number, destination: number) => {};
 
   constructor(pileNum: number, cellNum: number, baseNum: number, public desk: number[][]) {
     super(pileNum, cellNum, baseNum);
   }
 
+  // Default implementation just throws a solution object.
   stop(success: boolean) {
     throw new FreecellSolution(success);
   }
@@ -121,7 +122,15 @@ export class FreecellSolver extends FreecellBasis {
       if (src.length > 0) {
         const card = src[src.length - 1];
         if (!cardFilter || cardFilter[card]) {
-          // To a tableau.
+          // 1. To the base.
+          if (!this.isBase(line)) {
+            const base = this.getBase(card);
+            if (base >= 0) {
+              this.move(card, line, base);
+            }
+          }
+
+          // 2. To a tableau.
           for (let pile = this.PILE_START; pile < this.PILE_END; pile++) {
             if (pile !== line) {
               const dst = this.desk[pile];
@@ -131,27 +140,19 @@ export class FreecellSolver extends FreecellBasis {
             }
           }
 
-          // To an empty pile.
-          if (emptyPile >= 0) {
-            if (!this.isPile(line) || src.length > 1) {
-              this.move(card, line, emptyPile);
-            }
-          }
-
-          // To an empty cell.
+          // 3. To an empty cell.
           if (emptyCell >= 0) {
             if (!this.isCell(line)) {
               this.move(card, line, emptyCell);
             }
           }
 
-          // To the base.
-          if (!this.isBase(line)) {
-            const base = this.getBase(card);
-            if (base >= 0) {
-              this.move(card, line, base);
+          // 4. To an empty pile.
+          if (emptyPile >= 0) {
+            if (!this.isPile(line) || src.length > 1) {
+              this.move(card, line, emptyPile);
             }
-          }
+          }         
         }
       }
     }
