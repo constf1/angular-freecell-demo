@@ -243,11 +243,31 @@ export class FreecellGame extends FreecellBasis {
       }
     }
     solver.findMoves();
+    if (bestPath) {
+      // Go for the base.
+      if (this.isBase(bestPath.charCodeAt(1))) {
+        return bestPath;
+      }
+    } else {
+      // We cannot move a card. There is nothing to search for.
+      return bestPath;
+    }
 
     // Handle a tableau.
     const tableau = this.getTableauAt(source);
-    if (tableau.length <= 1) {
-      return bestPath;
+    if (tableau.length > 1) {
+      solver.cardFilter = tableau.reduce((obj, key) => { obj[key] = true; return obj; }, {});
+      solver.onMove = (card: number, src: number, dst: number) => {
+        if (card === lastCard && dst !== source) {
+          if (endsWith(solver.desk[dst], tableau)) {
+            bestPath = solver.getPath();
+            cardCount = tableau.length;
+            solver.stop(true);
+          }
+        } else {
+        }
+      };
+      solver.solve();
     }
     
     return bestPath;
