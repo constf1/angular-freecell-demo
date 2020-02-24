@@ -11,22 +11,22 @@ import {
 import { Renderer2 } from "@angular/core";
 
 import { Dragger } from "../common/dragger";
+import { toPercent } from "../common/math-utils";
 import { suitFullNameOf, rankFullNameOf, CARD_NUM } from "../common/deck";
 
 import { FreecellGame } from "./freecell-game";
 import { FreecellLayout } from "./freecell-layout";
 
-function toPercent(
-  numerator: number,
-  denominator: number = 100,
-  fractionDigits: number = 3
-): string {
-  return ((numerator * 100) / denominator).toFixed(fractionDigits) + "%";
-}
-
 interface Item {
   ngStyle: { [klass: string]: any };
   ngClass: { [klass: string]: any };
+}
+
+class MyDragger extends Dragger {
+  dragged = false;
+  constructor(screenX: number, screenY: number, renderer: Renderer2) {
+    super(screenX, screenY, renderer);
+  }
 }
 
 @Component({
@@ -44,7 +44,7 @@ export class FreecellComponent implements OnInit, OnChanges {
   spots: Item[] = [];
   cards: Item[] = [];
 
-  private dragger: Dragger | null = null;
+  private dragger: MyDragger | null = null;
 
   constructor(private renderer: Renderer2) {}
 
@@ -72,34 +72,38 @@ export class FreecellComponent implements OnInit, OnChanges {
       const cardIndex = index - this.spots.length;
       const tableau = this.game.asTablaeu(cardIndex);
 
-      this.dragger = new Dragger(event.screenX, event.screenY, this.renderer);
+      this.dragger = new MyDragger(event.screenX, event.screenY, this.renderer);
       this.onDragStart(tableau);
       this.dragger.onDrag = () => this.onDrag(tableau);
       this.dragger.onDragEnd = ev => {
         this.onDragEnd(tableau);
 
-        const destination = this.findDestination(index, ev.clientX, ev.clientY);
-        if (destination >= 0) {
-          const srcLine = this.game.getLineIndex(cardIndex);
-          const dstLine =
-            destination < this.spots.length
-              ? destination
-              : this.game.getLineIndex(destination - this.spots.length);
-          // console.log('Source:', srcLine);
-          if (srcLine !== dstLine) {
-            //     this.playPath(this.game.getBestPath(tableau, dstLine));
-            console.log('Move cards:', tableau);
-            console.log('Destination:', dstLine);
-            const path = this.game.getBestPath(tableau, dstLine);
-            if (path) {
-              console.log('Path:', path.length / 2);
-              for (let i = 0; i < path.length; i+=2) {
-                if (!this.moveCard(path.charCodeAt(i), path.charCodeAt(i + 1))) {
-                  break;
+        if (this.dragger.dragged) {
+          const destination = this.findDestination(index, ev.clientX, ev.clientY);
+          if (destination >= 0) {
+            const srcLine = this.game.getLineIndex(cardIndex);
+            const dstLine =
+              destination < this.spots.length
+                ? destination
+                : this.game.getLineIndex(destination - this.spots.length);
+            // console.log('Source:', srcLine);
+            if (srcLine !== dstLine) {
+              //     this.playPath(this.game.getBestPath(tableau, dstLine));
+              // console.log('Move cards:', tableau);
+              // console.log('Destination:', dstLine);
+              const path = this.game.getBestPath(tableau, dstLine);
+              if (path) {
+                console.log('Path:', path.length / 2);
+                for (let i = 0; i < path.length; i+=2) {
+                  if (!this.moveCard(path.charCodeAt(i), path.charCodeAt(i + 1))) {
+                    break;
+                  }
                 }
               }
             }
           }
+        } else {
+          // TODO: Find best move for source.
         }
 
         this.dragger = null;
@@ -121,6 +125,9 @@ export class FreecellComponent implements OnInit, OnChanges {
       card.ngStyle.transform = `translate(${this.dragger.deltaX}px, ${
         this.dragger.deltaY
       }px)`;
+    }
+    if (Math.abs(this.dragger.deltaX) > 4 || Math.abs(this.dragger.deltaY) > 4) {
+      this.dragger.dragged = true;
     }
   }
 

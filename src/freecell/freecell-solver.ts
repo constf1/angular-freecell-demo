@@ -29,6 +29,10 @@ export class FreecellSolver extends FreecellBasis {
     throw new FreecellSolution(success);
   }
 
+  getAllPaths(): string[] {
+    return this.buffers[this.iteration % 2];
+  }
+
   getPath(): string {
     const output = this.buffers[this.iteration % 2];
     return output[output.length - 1];

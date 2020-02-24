@@ -2,7 +2,7 @@ import { deck, isTableau, suitOf, rankOf } from "../common/deck";
 import { copy, endsWith } from '../common/array-utils';
 
 import { FreecellBasis } from "./freecell-basis";
-import { Filter, FreecellSolver, FreecellSolution } from './freecell-solver';
+import { FreecellSolver } from './freecell-solver';
 
 // Swaps source and destination in the path
 function swap(path: string, source: number, destination: number) {
