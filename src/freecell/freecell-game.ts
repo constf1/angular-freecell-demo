@@ -1,5 +1,5 @@
 import { deck, isTableau, suitOf, rankOf } from "../common/deck";
-import { copy, endsWith } from '../common/array-utils';
+import { copy, endsWith, reverseCountEquials } from '../common/array-utils';
 
 import { FreecellBasis } from "./freecell-basis";
 import { FreecellSolver } from './freecell-solver';
@@ -259,10 +259,18 @@ export class FreecellGame extends FreecellBasis {
       solver.cardFilter = tableau.reduce((obj, key) => { obj[key] = true; return obj; }, {});
       solver.onMove = (card: number, src: number, dst: number) => {
         if (card === lastCard && dst !== source) {
-          if (endsWith(solver.desk[dst], tableau)) {
-            bestPath = solver.getPath();
-            cardCount = tableau.length;
-            solver.stop(true);
+          const dstCount = reverseCountEquials(solver.desk[dst], tableau);
+          const srcCount = reverseCountEquials(solver.desk[source], tableau, 0, dstCount);
+
+          if (srcCount + dstCount === tableau.length) {
+            if (cardCount < dstCount) {
+              bestPath = solver.getPath();
+              cardCount = dstCount;
+
+              if (cardCount === tableau.length) {
+                solver.stop(true);
+              }
+            }
           }
         } else {
         }
