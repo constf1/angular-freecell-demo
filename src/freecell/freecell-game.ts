@@ -58,6 +58,17 @@ export class FreecellGame extends FreecellBasis {
 
   isMoveValid(source: number, destination: number): boolean {
     if (source === destination) {
+      // Empty move.
+      return false;
+    }
+
+    if (source < 0 || source >= this.DESK_SIZE) {
+      // Source is out of range.
+      return false;
+    }
+
+    if (destination < 0 || destination >= this.DESK_SIZE) {
+      // Destination is out of range.
       return false;
     }
 

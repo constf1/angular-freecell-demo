@@ -38,6 +38,7 @@ export class FreecellComponent implements OnInit, OnChanges {
   @Input() game: FreecellGame;
   @Input() layout: FreecellLayout;
   @Input() deal: number;
+  @Input() path: string = '';
 
   @ViewChildren("elements") elementList: QueryList<ElementRef<HTMLElement>>;
 
