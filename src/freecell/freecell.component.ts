@@ -37,6 +37,7 @@ class MyDragger extends Dragger {
 export class FreecellComponent implements OnInit, OnChanges {
   @Input() game: FreecellGame;
   @Input() layout: FreecellLayout;
+  @Input() deal: number;
 
   @ViewChildren("elements") elementList: QueryList<ElementRef<HTMLElement>>;
 
@@ -52,10 +53,17 @@ export class FreecellComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     console.log("app-freecell.ngOnChanges", changes);
-    this.spots = this.createSpots();
-    this.cards = this.createCards();
-    this.items = this.spots.concat(this.cards);
-    this.onDeal();
+    if (changes.layout) {
+      this.spots = this.createSpots();
+      this.cards = this.createCards();
+      this.items = this.spots.concat(this.cards);
+    }
+    if (changes.deal) {
+      this.game.deal(this.deal);
+    }
+    if (changes.game || changes.deal) {
+      this.onDeal();
+    }
   }
 
   trackByIndex(index: number): number {
@@ -200,8 +208,7 @@ export class FreecellComponent implements OnInit, OnChanges {
   createCards(): Item[] {
     const cards: Item[] = [];
     const layout = this.layout;
-    const game = this.game;
-    if (layout && game) {
+    if (layout) {
       const basis = layout.basis;
       const W = layout.width;
       const H = layout.height;

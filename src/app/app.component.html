@@ -1,5 +1,8 @@
 <div class="main" #mainRef>
   <app-ratio-keeper [width]="width" [height]="height" [ratio]="7/5">
-    <app-freecell [game]="game" [layout]="layout" >{{name}}</app-freecell>
+    <app-freecell [layout]="layout" [game]="game" [deal]="deal">
+      <button (click)="onDeal()">DEAL</button>
+      {{name}}
+    </app-freecell>
   </app-ratio-keeper>
 </div>
