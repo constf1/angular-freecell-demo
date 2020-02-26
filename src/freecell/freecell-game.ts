@@ -292,3 +292,6 @@ export class FreecellGame extends FreecellBasis {
     return bestPath;
   }
 }
+
+export type FreecellGameView = FreecellBasis &
+ Pick<FreecellGame, 'getLineIndex' | 'getOffset' | 'getCard' | 'getTableauAt' | 'asTablaeu' | 'getLine' | 'isMoveValid' >;

@@ -14,7 +14,7 @@ export class AppComponent implements OnInit, AfterViewInit  {
   @ViewChild('mainRef', {static: true}) mainRef: ElementRef<HTMLElement>;
   @ViewChild(FreecellComponent, {static: false}) freecellComponent: FreecellComponent;
 
-  name = 'Angular';
+  name = 'Current deal: ';
   width: number;
   height: number;
 

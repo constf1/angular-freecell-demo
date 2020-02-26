@@ -16,7 +16,7 @@ import { Dragger } from "../common/dragger";
 import { toPercent } from "../common/math-utils";
 import { suitFullNameOf, rankFullNameOf, CARD_NUM } from "../common/deck";
 
-import { FreecellGame } from "./freecell-game";
+import { FreecellGameView } from "./freecell-game";
 import { FreecellLayout } from "./freecell-layout";
 
 interface Item {
@@ -43,7 +43,7 @@ class MyDragger extends Dragger {
   styleUrls: ["./freecell.component.scss"]
 })
 export class FreecellComponent implements OnInit, OnChanges {
-  @Input() game: FreecellGame;
+  @Input() game: FreecellGameView;
   @Input() layout: FreecellLayout;
 
   @Output() lineChange = new EventEmitter<LineChangeEvent>();
