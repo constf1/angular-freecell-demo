@@ -59,7 +59,7 @@ export class AppComponent implements OnInit, AfterViewInit  {
   }
 
   onLineChange(event: LineChangeEvent) {
-    console.log('Line Change Event:', event);
+    // console.log('Line Change Event:', event);
     this.autoplay.stop();
 
     let path = ''
@@ -69,23 +69,13 @@ export class AppComponent implements OnInit, AfterViewInit  {
       path = this.game.getBestPath(event.tableau, event.destination);
     }
     if (path) {
-      console.log('Path:', path.length / 2);
+      // console.log('Path:', path.length / 2);
       this.moveCard(path.charCodeAt(0), path.charCodeAt(1), path.length > 2);
       path = path.substring(2);
 
       if (path) {
         this.autoplay.play(() => this.moveCard(path.charCodeAt(0), path.charCodeAt(1), path.length > 2) && (path = path.substring(2)).length > 0);
       }
-      // for (let i = 0; i < path.length; i+=2) {
-      //   const source = path.charCodeAt(i);
-      //   const destination = path.charCodeAt(i + 1);
-      //   if (this.game.moveCard(source, destination)) {
-      //     this.freecellComponent.onCardMove(source, destination);
-      //   } else {
-      //     console.warn('Invalid Move:', source, destination);
-      //     break;
-      //   }
-      // }
     }
   }
 

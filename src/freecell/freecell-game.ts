@@ -192,9 +192,8 @@ export class FreecellGame extends FreecellBasis {
       return this.isMoveValid(source, destination) ? String.fromCharCode(source, destination) : '';
     }
 
-    const startTime = Date.now();
-
     const solver = new FreecellSolver(this.PILE_NUM, this.CELL_NUM, this.BASE_NUM, copy(this.desk));
+    solver.cardToWatch = lastCard;
     solver.cardFilter = tableau.reduce((obj, key) => { obj[key] = true; return obj; }, {});
     solver.destinationFilter = { [destination]: true };
     if (this.isPile(destination) && this.getLine(destination).length === 0) {
@@ -206,19 +205,12 @@ export class FreecellGame extends FreecellBasis {
       }
     }
     solver.onMove = (card: number, src: number, dst: number) => {
-      if (card === lastCard && endsWith(solver.desk[dst], tableau)) {
+      if (endsWith(solver.desk[dst], tableau)) {
         solver.stop(true);
-      } else {
-        if (Date.now() - startTime > 500) {
-          // It's time to stop the search.
-          console.log('Oops! Search timeout!');
-          solver.stop(false);
-        }
       }
     };
 
     if (solver.solve()) {
-      console.log('Search time: ' + (Date.now() - startTime));
       let path = solver.getPath();
       const d = path.charCodeAt(path.length - 1);
       if (d !== destination) {
@@ -228,8 +220,6 @@ export class FreecellGame extends FreecellBasis {
 
       return path;
     }
-
-    console.log('Full search time: ' + (Date.now() - startTime));
     return '';
   }
 
@@ -245,8 +235,8 @@ export class FreecellGame extends FreecellBasis {
     let bestPath = '';
     let cardCount = 0;
 
-    const lastCard = this.getCard(source, -1);
-    solver.cardFilter = {[lastCard]: true};
+    solver.cardToWatch = this.getCard(source, -1); // last card
+    solver.cardFilter = {[solver.cardToWatch]: true};
     solver.onMove = (card: number, src: number, dst: number) => {
       if (!bestPath) {
         bestPath = solver.getPath();
@@ -269,7 +259,7 @@ export class FreecellGame extends FreecellBasis {
     if (tableau.length > 1) {
       solver.cardFilter = tableau.reduce((obj, key) => { obj[key] = true; return obj; }, {});
       solver.onMove = (card: number, src: number, dst: number) => {
-        if (card === lastCard && dst !== source) {
+        if (dst !== source) {
           const dstCount = reverseCountEquials(solver.desk[dst], tableau);
           const srcCount = reverseCountEquials(solver.desk[source], tableau, 0, dstCount);
 
@@ -283,7 +273,6 @@ export class FreecellGame extends FreecellBasis {
               }
             }
           }
-        } else {
         }
       };
       solver.solve();

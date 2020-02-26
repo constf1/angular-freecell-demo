@@ -162,6 +162,7 @@ export class FreecellComponent implements OnInit, OnChanges {
       card.ngStyle.zIndex = this.game.getOffset(index);
       delete card.ngStyle.transform;
       delete card.ngClass.dragged;
+      setTransition(card.ngClass, 'transition_fast');
     }
   }
 

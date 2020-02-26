@@ -11,6 +11,7 @@ export class FreecellSolution {
 export class FreecellSolver extends FreecellBasis {
   cardFilter?: Filter;
   destinationFilter?: Filter;
+  cardToWatch = -1;
 
   private readonly done = new Set<string>();
   private readonly buffers: string[][] = [[], []];
@@ -52,7 +53,9 @@ export class FreecellSolver extends FreecellBasis {
     this.done.add(this.toKey());
     this.buffers[0][0] = '';
 
+    const startTime = Date.now();
     try {
+
       for (let input: string[]; (input = this.buffers[this.iteration % 2]).length > 0;) {
         this.iteration++;
         // const output = this.buffers[this.iteration % 2];
@@ -65,6 +68,12 @@ export class FreecellSolver extends FreecellBasis {
 
         // clear input
         input.length = 0;
+
+        if (Date.now() - startTime > 500) {
+          // It's time to stop the search.
+          console.log('Oops! Search timeout!');
+          this.stop(false);
+        }
       }
     } catch (e) {
       if (e instanceof FreecellSolution) {
@@ -73,7 +82,7 @@ export class FreecellSolver extends FreecellBasis {
         throw e;  // re-throw the error unchanged
       }
     } finally {
-      console.log('Searched:', this.done.size);
+      console.log('Searched: ' + this.done.size + '. Time (ms): ' + (Date.now() - startTime));
     }
     return false;
   }
@@ -103,7 +112,8 @@ export class FreecellSolver extends FreecellBasis {
       this.done.add(key);
       this.buffers[this.iteration % 2].push(this.path + String.fromCharCode(source, destination));
 
-      if ((!this.cardFilter || this.cardFilter[card]) &&
+      if ((this.cardToWatch < 0 || this.cardToWatch === card) &&
+        (!this.cardFilter || this.cardFilter[card]) &&
         (!this.destinationFilter || this.destinationFilter[destination])) {
         this.onMove(card, source, destination);
       }
