@@ -30,6 +30,16 @@ export interface LineChangeEvent {
   destination?: number;
 }
 
+const Transitions = ['transition_deal', 'transition_norm', 'transition_fast'] as const;
+type Transition = typeof Transitions[number];
+type TransitionMap = Partial<{ [key in Transition]: boolean }>;
+
+function setTransition(classNames: TransitionMap, transition?: Transition) {
+  for (const t of Transitions) {
+    classNames[t] = t === transition;
+  }
+}
+
 class MyDragger extends Dragger {
   dragged = false;
   constructor(screenX: number, screenY: number, renderer: Renderer2) {
@@ -157,13 +167,13 @@ export class FreecellComponent implements OnInit, OnChanges {
 
   onDeal() {
     for (let i = this.game.DESK_SIZE; i-- > 0; ) {
-      this.updateLine(i);
+      this.updateLine(i, 'transition_deal');
     }
   }
 
-  onCardMove(source: number, destination: number) {
-    this.updateLine(source);
-    this.updateLine(destination);
+  onCardMove(source: number, destination: number, transition: Transition = 'transition_norm') {
+    this.updateLine(source, transition);
+    this.updateLine(destination, transition);
   }
 
   // moveCard(source: number, destination: number) {
@@ -243,7 +253,7 @@ export class FreecellComponent implements OnInit, OnChanges {
     return cards;
   }
 
-  updateLine(index: number) {
+  updateLine(index: number, transition: Transition = 'transition_norm') {
     const line = this.game.getLine(index);
     const count = line.length;
     const W = this.layout.width;
@@ -254,6 +264,8 @@ export class FreecellComponent implements OnInit, OnChanges {
       item.ngStyle.left = toPercent(pos.x, W);
       item.ngStyle.top = toPercent(pos.y, H);
       item.ngStyle.zIndex = i;
+
+      setTransition(item.ngClass, transition);
     }
   }
 
