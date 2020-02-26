@@ -1,9 +1,11 @@
 import { Component, HostListener, ViewChild, ElementRef, OnInit, AfterViewInit } from '@angular/core';
 
+import { randomIneger } from '../common/math-utils'
+import { Autoplay } from '../common/autoplay'
+
 import { FreecellComponent, LineChangeEvent } from '../freecell/freecell.component';
 import { FreecellGame } from '../freecell/freecell-game';
 import { FreecellLayout } from '../freecell/freecell-layout';
-import { randomIneger } from '../common/math-utils'
 
 @Component({
   selector: 'my-app',
@@ -22,6 +24,8 @@ export class AppComponent implements OnInit, AfterViewInit  {
   layout = new FreecellLayout(this.game);
 
   deal: number | undefined;
+
+  autoplay = new Autoplay(200);
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
@@ -56,6 +60,8 @@ export class AppComponent implements OnInit, AfterViewInit  {
 
   onLineChange(event: LineChangeEvent) {
     console.log('Line Change Event:', event);
+    this.autoplay.stop();
+
     let path = ''
     if (event.destination === undefined) {
       path = this.game.solveFor(event.source);
@@ -63,17 +69,33 @@ export class AppComponent implements OnInit, AfterViewInit  {
       path = this.game.getBestPath(event.tableau, event.destination);
     }
     if (path) {
-    console.log('Path:', path.length / 2);
-    for (let i = 0; i < path.length; i+=2) {
-      const source = path.charCodeAt(i);
-      const destination = path.charCodeAt(i + 1);
-      if (this.game.moveCard(source, destination)) {
-        this.freecellComponent.onCardMove(source, destination);
-      } else {
-        console.warn('Invalid Move:', source, destination);
-        break;
+      console.log('Path:', path.length / 2);
+      this.moveCard(path.charCodeAt(0), path.charCodeAt(1), path.length > 2);
+      path = path.substring(2);
+
+      if (path) {
+        this.autoplay.play(() => this.moveCard(path.charCodeAt(0), path.charCodeAt(1), path.length > 2) && (path = path.substring(2)).length > 0);
       }
+      // for (let i = 0; i < path.length; i+=2) {
+      //   const source = path.charCodeAt(i);
+      //   const destination = path.charCodeAt(i + 1);
+      //   if (this.game.moveCard(source, destination)) {
+      //     this.freecellComponent.onCardMove(source, destination);
+      //   } else {
+      //     console.warn('Invalid Move:', source, destination);
+      //     break;
+      //   }
+      // }
     }
   }
+
+  moveCard(source: number, destination: number, fast: boolean = false) {
+    if (this.game.moveCard(source, destination)) {
+      this.freecellComponent.onCardMove(source, destination, fast ? 'transition_fast' : 'transition_norm');
+      return true;
+    } else {
+      console.warn('Invalid Move:', source, destination);
+      return false;
+    }
   }
 }
