@@ -2,11 +2,13 @@ import {
   Component,
   OnInit,
   OnChanges,
+  Output,
   Input,
   SimpleChanges,
   ViewChildren,
   QueryList,
-  ElementRef
+  ElementRef,
+  EventEmitter
 } from "@angular/core";
 import { Renderer2 } from "@angular/core";
 
@@ -20,6 +22,12 @@ import { FreecellLayout } from "./freecell-layout";
 interface Item {
   ngStyle: { [klass: string]: any };
   ngClass: { [klass: string]: any };
+}
+
+export interface LineChangeEvent {
+  source: number;
+  tableau?: number[];
+  destination?: number;
 }
 
 class MyDragger extends Dragger {
@@ -37,8 +45,8 @@ class MyDragger extends Dragger {
 export class FreecellComponent implements OnInit, OnChanges {
   @Input() game: FreecellGame;
   @Input() layout: FreecellLayout;
-  @Input() deal: number;
-  @Input() path: string = '';
+
+  @Output() lineChange = new EventEmitter<LineChangeEvent>();
 
   @ViewChildren("elements") elementList: QueryList<ElementRef<HTMLElement>>;
 
@@ -59,10 +67,7 @@ export class FreecellComponent implements OnInit, OnChanges {
       this.cards = this.createCards();
       this.items = this.spots.concat(this.cards);
     }
-    if (changes.deal) {
-      this.game.deal(this.deal);
-    }
-    if (changes.game || changes.deal) {
+    if (changes.game) {
       this.onDeal();
     }
   }
@@ -97,29 +102,26 @@ export class FreecellComponent implements OnInit, OnChanges {
               destination < this.spots.length
                 ? destination
                 : this.game.getLineIndex(destination - this.spots.length);
-            // console.log('Source:', srcLine);
             if (srcLine !== dstLine) {
-              //     this.playPath(this.game.getBestPath(tableau, dstLine));
-              // console.log('Move cards:', tableau);
-              // console.log('Destination:', dstLine);
-              path = this.game.getBestPath(tableau, dstLine);
+              // path = this.game.getBestPath(tableau, dstLine);
+              this.lineChange.emit({ source: srcLine, destination: dstLine, tableau });
             }
           }
         } else {
-          // TODO: Find best move for the source line.
           const srcLine = this.game.getLineIndex(cardIndex);
-          path = this.game.solveFor(srcLine);
+          this.lineChange.emit({ source: srcLine });
+          // path = this.game.solveFor(srcLine);
         }
 
         this.dragger = null;
-        if (path) {
-          console.log('Path:', path.length / 2);
-          for (let i = 0; i < path.length; i+=2) {
-            if (!this.moveCard(path.charCodeAt(i), path.charCodeAt(i + 1))) {
-              break;
-            }
-          }
-        }
+        // if (path) {
+        //   console.log('Path:', path.length / 2);
+        //   for (let i = 0; i < path.length; i+=2) {
+        //     if (!this.moveCard(path.charCodeAt(i), path.charCodeAt(i + 1))) {
+        //       break;
+        //     }
+        //   }
+        // }
       };
     }
   }
@@ -159,16 +161,21 @@ export class FreecellComponent implements OnInit, OnChanges {
     }
   }
 
-  moveCard(source: number, destination: number) {
-    if (this.game.moveCard(source, destination)) {
-      this.updateLine(source);
-      this.updateLine(destination);
-      return true;
-    } else {
-      console.warn('Invalid Move:', source, destination);
-    }
-    return false;
+  onCardMove(source: number, destination: number) {
+    this.updateLine(source);
+    this.updateLine(destination);
   }
+
+  // moveCard(source: number, destination: number) {
+  //   if (this.game.moveCard(source, destination)) {
+  //     this.updateLine(source);
+  //     this.updateLine(destination);
+  //     return true;
+  //   } else {
+  //     console.warn('Invalid Move:', source, destination);
+  //   }
+  //   return false;
+  // }
 
   createSpots(): Item[] {
     const placeholders: Item[] = [];
@@ -262,7 +269,7 @@ export class FreecellComponent implements OnInit, OnChanges {
             rc.top <= clientY &&
             clientY <= rc.bottom
           ) {
-            console.log("Collision at: " + i);
+            // console.log("Collision at: " + i);
             return i;
           }
         }
