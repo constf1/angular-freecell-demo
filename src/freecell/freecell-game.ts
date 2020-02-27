@@ -119,11 +119,11 @@ export class FreecellGame extends FreecellBasis {
    * @param destination destination line
    */
   moveCard(source: number, destination: number) {
-    if (this.isMoveValid(source, destination)) {
+    // if (this.isMoveValid(source, destination)) {
       this.addCard(destination, this.desk[source].pop());
-      return true;
-    }
-    return false;
+      // return true;
+    // }
+    // return false;
   }
 
   /**

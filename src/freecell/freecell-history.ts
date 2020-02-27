@@ -13,12 +13,24 @@ export class FreecellHistory {
     return this.seed;
   }
 
-  get current() {
-    return this.mark / 2;
+  get currentSource() {
+    return this.path.charCodeAt(this.mark - 2);
+  }
+
+  get currentDestination() {
+    return this.path.charCodeAt(this.mark - 1);
+  }
+
+  get nextSource() {
+    return this.path.charCodeAt(this.mark);
+  }
+
+  get nextDestination() {
+    return this.path.charCodeAt(this.mark + 1);
   }
 
   get available() {
-    return this.size - this.current;
+    return (this.path.length - this.mark) / 2;
   }
 
   get canUndo() {

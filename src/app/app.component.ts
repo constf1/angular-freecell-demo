@@ -59,6 +59,18 @@ export class AppComponent implements OnInit, AfterViewInit  {
     // }
   }
 
+  onUndo() {
+    if (this.history.canUndo) {
+      this.moveCard(this.history.currentDestination, this.history.currentSource);
+    }
+  }
+
+  onRedo() {
+    if (this.history.canRedo) {
+      this.moveCard(this.history.nextSource, this.history.nextDestination);
+    }
+  }
+
   onDeal() {
     const deal = randomIneger(0, 10, this.history.deal);
     this.game.deal(deal);
@@ -90,7 +102,11 @@ export class AppComponent implements OnInit, AfterViewInit  {
       path = path.substring(2);
 
       if (path) {
-        this.autoplay.play(() => this.moveCard(path.charCodeAt(0), path.charCodeAt(1), path.length > 2) && (path = path.substring(2)).length > 0);
+        this.autoplay.play(() => {
+          this.moveCard(path.charCodeAt(0), path.charCodeAt(1), path.length > 2);
+          path = path.substring(2);
+          return path.length > 0;
+        });
       }
     }
   }
@@ -107,14 +123,9 @@ export class AppComponent implements OnInit, AfterViewInit  {
   }
 
   moveCard(source: number, destination: number, fast: boolean = false) {
-    if (this.game.moveCard(source, destination)) {
-      this.history.onMove(source, destination);
-      this.freecellComponent.onCardMove(source, destination, fast ? 'transition_fast' : 'transition_norm');
-      this.onUpdate();
-      return true;
-    } else {
-      console.warn('Invalid Move:', source, destination);
-      return false;
-    }
+    this.game.moveCard(source, destination);
+    this.history.onMove(source, destination);
+    this.freecellComponent.onCardMove(source, destination, fast ? 'transition_fast' : 'transition_norm');
+    this.onUpdate();
   }
 }
