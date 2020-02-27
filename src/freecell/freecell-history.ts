@@ -1,0 +1,69 @@
+export class FreecellHistory {
+  private seed: number;
+  private path: string;
+  private mark: number;
+
+  get size() {
+    return this.path.length / 2;
+  }
+
+  get deal() {
+    return this.seed;
+  }
+
+  get current() {
+    return this.mark / 2;
+  }
+
+  get available() {
+    return this.size - this.current;
+  }
+
+  get canUndo() {
+    return this.mark > 0;
+  }
+
+  get canRedo() {
+    return this.mark < this.path.length;
+  }
+
+  onDeal(deal: number) {
+    this.seed = deal;
+    this.path = '';
+    this.mark = 0;
+  }
+
+  undo() {
+    if (this.canUndo) {
+      this.mark -= 2;
+      return true;
+    }
+    return false;
+  }
+
+  redo() {
+    if (this.canRedo) {
+      this.mark += 2;
+      return true;
+    }
+    return false;
+  }
+
+  onMove(source: number, destination: number) {
+    if (
+      this.canUndo &&
+      this.path.charCodeAt(this.mark - 1) === source &&
+      this.path.charCodeAt(this.mark - 2) === destination
+    ) {
+      this.undo();
+    } else if (
+      this.canRedo &&
+      this.path.charCodeAt(this.mark) === source &&
+      this.path.charCodeAt(this.mark + 1) === destination
+    ) {
+      this.redo();
+    } else {
+      // TODO: Do Append
+    }
+  }
+}
