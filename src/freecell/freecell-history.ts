@@ -1,3 +1,5 @@
+import { byteToCode } from '../common/math-utils';
+
 export class FreecellHistory {
   private seed: number;
   private path: string;
@@ -25,6 +27,20 @@ export class FreecellHistory {
 
   get canRedo() {
     return this.mark < this.path.length;
+  }
+
+  toURI() {
+    let uri = 'deal=' + this.deal;
+    if (this.path) {
+      uri += '&path=';
+      for (let i = 0; i < this.path.length; i++) {
+        uri += byteToCode(this.path.charCodeAt(i));
+      }
+      if (this.mark < this.path.length) {
+        uri += '&mark=' + this.mark;
+      }
+    }
+    return uri;
   }
 
   onDeal(deal: number) {
@@ -63,7 +79,11 @@ export class FreecellHistory {
     ) {
       this.redo();
     } else {
-      // TODO: Do Append
+      this.path =
+        (this.mark < this.path.length
+          ? this.path.substring(0, this.mark)
+          : this.path) + String.fromCharCode(source, destination);
+      this.mark = this.path.length;
     }
   }
 }
