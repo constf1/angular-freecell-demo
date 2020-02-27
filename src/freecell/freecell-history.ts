@@ -2,8 +2,8 @@ import { byteToCode } from '../common/math-utils';
 
 export class FreecellHistory {
   private seed: number;
-  private path: string;
-  private mark: number;
+  private path = '';
+  private mark = 0;
 
   get size() {
     return this.path.length / 2;
@@ -34,7 +34,7 @@ export class FreecellHistory {
     if (this.path) {
       uri += '&path=';
       for (let i = 0; i < this.path.length; i++) {
-        uri += byteToCode(this.path.charCodeAt(i));
+        uri += String.fromCharCode(byteToCode(this.path.charCodeAt(i)));
       }
       if (this.mark < this.path.length) {
         uri += '&mark=' + this.mark;

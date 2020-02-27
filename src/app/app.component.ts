@@ -6,6 +6,7 @@ import { Autoplay } from '../common/autoplay'
 import { FreecellComponent, LineChangeEvent } from '../freecell/freecell.component';
 import { FreecellGame } from '../freecell/freecell-game';
 import { FreecellLayout } from '../freecell/freecell-layout';
+import { FreecellHistory } from '../freecell/freecell-history';
 
 @Component({
   selector: 'my-app',
@@ -16,14 +17,13 @@ export class AppComponent implements OnInit, AfterViewInit  {
   @ViewChild('mainRef', {static: true}) mainRef: ElementRef<HTMLElement>;
   @ViewChild(FreecellComponent, {static: false}) freecellComponent: FreecellComponent;
 
-  name = 'Current deal: ';
+  name = 'History: ';
   width: number;
   height: number;
 
   game = new FreecellGame(8, 4, 4);
   layout = new FreecellLayout(this.game);
-
-  deal: number | undefined;
+  history = new FreecellHistory();
 
   autoplay = new Autoplay(200);
 
@@ -53,8 +53,9 @@ export class AppComponent implements OnInit, AfterViewInit  {
   }
 
   onDeal() {
-    this.deal = randomIneger(0, 10, this.deal);
-    this.game.deal(this.deal);
+    const deal = randomIneger(0, 10, this.history.deal);
+    this.game.deal(deal);
+    this.history.onDeal(deal);
     this.freecellComponent.onDeal();
   }
 
@@ -81,6 +82,7 @@ export class AppComponent implements OnInit, AfterViewInit  {
 
   moveCard(source: number, destination: number, fast: boolean = false) {
     if (this.game.moveCard(source, destination)) {
+      this.history.onMove(source, destination);
       this.freecellComponent.onCardMove(source, destination, fast ? 'transition_fast' : 'transition_norm');
       return true;
     } else {
