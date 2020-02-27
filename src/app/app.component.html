@@ -3,6 +3,12 @@
     <app-freecell [layout]="layout" [game]="game" (lineChange)="onLineChange($event)">
       <button (click)="onDeal()">DEAL</button>
       {{name + history.toURI()}}
+      <button class="freecell-button" *ngIf="nextMove" (click)="onAuto()"
+        [style.left.%]="100 * layout.baseStartX / layout.width"
+        [style.width.%]="100 * (layout.baseEndX - layout.baseStartX) / layout.width"
+        [style.top.%]="100 * (layout.baseEndY + 0.25 * layout.deltaHeight) / layout.height"
+        [style.height.%]="100 * 0.5 * layout.deltaHeight / layout.height"
+      >AUTO</button>
     </app-freecell>
   </app-ratio-keeper>
 </div>

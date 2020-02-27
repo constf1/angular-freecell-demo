@@ -56,6 +56,18 @@ export class FreecellGame extends FreecellBasis {
     this.desk[destination].push(card);
   }
 
+  findMoves(callback: (source: number, destination: number) => boolean) {
+    for (let i = this.DESK_SIZE; i-- > 0;) {
+      for (let j = i; j-- > 0;) {
+        if (i !== j) {
+          if ((this.isMoveValid(i, j) && callback(i, j)) || (this.isMoveValid(j, i) && callback(j, i))) {
+            return;            
+          }
+        }
+      }
+    }
+  }
+
   isMoveValid(source: number, destination: number): boolean {
     if (source === destination) {
       // Empty move.

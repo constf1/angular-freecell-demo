@@ -24,6 +24,7 @@ export class AppComponent implements OnInit, AfterViewInit  {
   game = new FreecellGame(8, 4, 4);
   layout = new FreecellLayout(this.game);
   history = new FreecellHistory();
+  nextMove: { source: number, destination: number } = null;
 
   autoplay = new Autoplay(200);
 
@@ -41,6 +42,12 @@ export class AppComponent implements OnInit, AfterViewInit  {
       this.width = this.mainRef.nativeElement.clientWidth;
       this.height = this.mainRef.nativeElement.clientHeight;
     }
+
+    const left = this.layout.baseStartX;
+    const width = this.layout.baseEndX - this.layout.baseStartX;
+    const top = this.layout.baseEndY + 0.25 * this.layout.deltaHeight;
+    const height = this.layout.deltaHeight * 0.5;
+
     this.game.deal();
   }
 
@@ -57,6 +64,14 @@ export class AppComponent implements OnInit, AfterViewInit  {
     this.game.deal(deal);
     this.history.onDeal(deal);
     this.freecellComponent.onDeal();
+    this.onUpdate();
+  }
+
+  onAuto() {
+    this.autoplay.play(() => {
+      this.moveCard(this.nextMove.source, this.nextMove.destination);
+      return !!this.nextMove;
+    });
   }
 
   onLineChange(event: LineChangeEvent) {
@@ -80,10 +95,22 @@ export class AppComponent implements OnInit, AfterViewInit  {
     }
   }
 
+  onUpdate() {
+    this.nextMove = null;
+    this.game.findMoves((source, destination) => {
+      if (this.game.isBase(destination)) {
+        this.nextMove = { source, destination }
+        return true;
+      }
+      return false;
+    })
+  }
+
   moveCard(source: number, destination: number, fast: boolean = false) {
     if (this.game.moveCard(source, destination)) {
       this.history.onMove(source, destination);
       this.freecellComponent.onCardMove(source, destination, fast ? 'transition_fast' : 'transition_norm');
+      this.onUpdate();
       return true;
     } else {
       console.warn('Invalid Move:', source, destination);
