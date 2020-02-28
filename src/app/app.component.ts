@@ -98,7 +98,8 @@ export class AppComponent implements OnInit, AfterViewInit  {
     }
     if (path) {
       // console.log('Path:', path.length / 2);
-      this.moveCard(path.charCodeAt(0), path.charCodeAt(1), path.length > 2);
+      this.moveCard(path.charCodeAt(0), path.charCodeAt(1),
+        path.length > 2 || event.destination !== undefined);
       path = path.substring(2);
 
       if (path) {
