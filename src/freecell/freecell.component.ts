@@ -251,16 +251,24 @@ export class FreecellComponent implements OnInit, OnChanges {
     return cards;
   }
 
+  getCardTransform(lineIndex: number, cardIndex: number) {
+    const pos = this.layout.getCardPosition(lineIndex,
+      this.game.getOffset(cardIndex), this.game.getLine(lineIndex).length);
+    return `translate(${toPercent(pos.x, this.layout.itemWidth)}, ${toPercent(pos.y, this.layout.itemHeight)})`;
+  }
+
   updateLine(index: number, transition: Transition = 'transition_norm') {
     const line = this.game.getLine(index);
-    const count = line.length;
-    const W = this.layout.width;
-    const H = this.layout.height;
-    for (let i = 0; i < count; i++) {
-      const pos = this.layout.getCardPosition(index, i, count);
+    // const count = line.length;
+    // const W = this.layout.width;
+    // const H = this.layout.height;
+    // for (let i = 0; i < count; i++) {
+    for (let i = line.length; i-- > 0;) {
+      // const pos = this.layout.getCardPosition(index, i, count);
       const item = this.cards[line[i]];
-      item.ngStyle.left = toPercent(pos.x, W);
-      item.ngStyle.top = toPercent(pos.y, H);
+      // item.ngStyle.left = toPercent(pos.x, W);
+      // item.ngStyle.top = toPercent(pos.y, H);
+      item.ngStyle.transform = this.getCardTransform(index, line[i]);
       item.ngStyle.zIndex = i;
 
       setTransition(item.ngClass, transition);
