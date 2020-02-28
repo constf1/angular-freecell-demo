@@ -20,6 +20,7 @@
 }
 
 .placeholder, .card {
+  cursor: pointer;
   position: absolute;
 
   background-image: url('/assets/cards.svg');
@@ -79,5 +80,6 @@
   &.dragged {
     transition-property: none;
     border: 1px solid grey;
+    cursor: grabbing;
   }
 }

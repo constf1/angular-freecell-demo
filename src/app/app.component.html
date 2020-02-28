@@ -1,16 +1,13 @@
 <div class="main" #mainRef>
   <app-ratio-keeper [width]="width" [height]="height" [ratio]="7/5">
     <app-freecell [layout]="layout" [game]="game" (lineChange)="onLineChange($event)">
-      <button (click)="onDeal()">DEAL</button>
-      <button *ngIf="history.canUndo" (click)="onUndo()">UNDO</button>
-      <button *ngIf="history.canRedo" (click)="onRedo()">REDO</button>
-      {{name + history.toURI()}}
-      <button class="freecell-button" *ngIf="nextMove" (click)="onAuto()"
-        [style.left.%]="100 * layout.baseStartX / layout.width"
-        [style.width.%]="100 * (layout.baseEndX - layout.baseStartX) / layout.width"
-        [style.top.%]="100 * (layout.baseEndY + 0.25 * layout.deltaHeight) / layout.height"
-        [style.height.%]="100 * 0.5 * layout.deltaHeight / layout.height"
+      <button class="freecell top-left" (click)="onDeal()">DEAL</button>
+      <button class="freecell top-right" [disabled]="!nextMove" (click)="onAuto()"
+        [style.height.%]="100 * 0.75 * layout.deltaHeight / layout.height"
       >AUTO</button>
+      <button class="freecell bottom-left" [disabled]="!history.canUndo" (click)="onUndo()">UNDO</button>
+      <button class="freecell bottom-right" [disabled]="!history.canRedo" (click)="onRedo()">REDO</button>
     </app-freecell>
   </app-ratio-keeper>
+  {{name + history.toURI()}}
 </div>
