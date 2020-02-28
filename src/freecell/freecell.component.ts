@@ -147,9 +147,7 @@ export class FreecellComponent implements OnInit, OnChanges {
   onDrag(tableau: Readonly<number[]>) {
     for (const index of tableau) {
       const card = this.cards[index];
-      card.ngStyle.transform = `translate(${this.dragger.deltaX}px, ${
-        this.dragger.deltaY
-      }px)`;
+      card.ngStyle.transform = `translate(${this.dragger.deltaX}px, ${this.dragger.deltaY}px)`;
     }
     if (Math.abs(this.dragger.deltaX) > 4 || Math.abs(this.dragger.deltaY) > 4) {
       this.dragger.dragged = true;
@@ -193,19 +191,18 @@ export class FreecellComponent implements OnInit, OnChanges {
     const layout = this.layout;
     if (layout) {
       const basis = layout.basis;
-      const W = layout.width;
-      const H = layout.height;
+      const itemWidth = layout.itemWidth;
+      const itemHeight = layout.itemHeight;
 
-      const width = toPercent(layout.itemWidth, W);
-      const height = toPercent(layout.itemHeight, H);
+      const width = toPercent(itemWidth, layout.width);
+      const height = toPercent(itemHeight, layout.height);
 
       for (let i = 0; i < basis.DESK_SIZE; i++) {
         const pos = layout.getSpotPosition(i);
-        const left = toPercent(pos.x, W);
-        const top = toPercent(pos.y, H);
+        const transform = `translate(${toPercent(pos.x, itemWidth)}, ${toPercent(pos.y, itemHeight)})`;
 
         const item: Item = {
-          ngStyle: { left, top, width, height },
+          ngStyle: { transform, width, height },
           ngClass: { placeholder: true }
         };
 
