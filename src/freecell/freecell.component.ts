@@ -137,9 +137,10 @@ export class FreecellComponent implements OnInit, OnChanges {
   }
 
   onDragStart(tableau: Readonly<number[]>) {
+    const lineZIndex = this.getLineZIndex(-1);
     for (let i = 0; i < tableau.length; i++) {
       const card = this.cards[tableau[i]];
-      card.ngStyle.zIndex = CARD_NUM + i;
+      card.ngStyle.zIndex = lineZIndex + i;
       card.ngClass.dragged = true;
     }
   }
@@ -160,10 +161,10 @@ export class FreecellComponent implements OnInit, OnChanges {
   onDragEnd(tableau: Readonly<number[]>) {
     for (const index of tableau) {
       const card = this.cards[index];
-      card.ngStyle.zIndex = this.game.getOffset(index);
-      // delete card.ngStyle.transform;
-      card.ngStyle.transform =
-        this.getCardTransform(this.game.getLineIndex(index), index);
+      const lineIndex = this.game.getLineIndex(index);
+
+      card.ngStyle.zIndex = this.getLineZIndex(lineIndex) + this.game.getOffset(index);
+      card.ngStyle.transform = this.getCardTransform(lineIndex, index);
       delete card.ngClass.dragged;
       setTransition(card.ngClass, 'transition_fast');
     }
@@ -262,8 +263,22 @@ export class FreecellComponent implements OnInit, OnChanges {
     return `translate(${toPercent(pos.x, this.layout.itemWidth)}, ${toPercent(pos.y, this.layout.itemHeight)})`;
   }
 
+  getLineZIndex(lineIndex: number) {
+    if (this.game.isPile(lineIndex)) {
+      return 1;
+    }
+    if (this.game.isCell(lineIndex)) {
+      return CARD_NUM;
+    }
+    if (this.game.isBase(lineIndex)) {
+      return 2 * CARD_NUM;
+    }
+    return 3 * CARD_NUM;
+  }
+
   updateLine(index: number, transition: Transition = 'transition_norm') {
     const line = this.game.getLine(index);
+    const lineZIndex = this.getLineZIndex(index);
     // const count = line.length;
     // const W = this.layout.width;
     // const H = this.layout.height;
@@ -274,7 +289,7 @@ export class FreecellComponent implements OnInit, OnChanges {
       // item.ngStyle.left = toPercent(pos.x, W);
       // item.ngStyle.top = toPercent(pos.y, H);
       item.ngStyle.transform = this.getCardTransform(index, line[i]);
-      item.ngStyle.zIndex = i;
+      item.ngStyle.zIndex = i + lineZIndex;
 
       setTransition(item.ngClass, transition);
     }

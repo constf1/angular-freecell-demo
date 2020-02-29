@@ -69,8 +69,8 @@
   }
 
   &.transition_norm {
-    transition-duration: 1s;
-    transition-timing-function: cubic-bezier(.5,1,.5,1);
+    transition-duration: 0.5s;
+    transition-timing-function: linear;
   }
 
   &.transition_fast {
