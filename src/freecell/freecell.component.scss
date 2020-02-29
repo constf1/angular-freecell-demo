@@ -61,6 +61,8 @@
   &.Queen { @include bg_rank(11); }
   &.King { @include bg_rank(12); }
 
+  transition-property: transform;
+  
   &.transition_deal {
     transition-duration: 1.5s;
     transition-timing-function: cubic-bezier(.6,-0.5,.25,1.5);
@@ -77,7 +79,6 @@
   }
 
   // transition-property: left, top;
-  // transition-property: transform;
   // transition-duration: 1s;
   // transition-timing-function: cubic-bezier(.5,1,.5,1);
 
