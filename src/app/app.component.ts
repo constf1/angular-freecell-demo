@@ -61,7 +61,7 @@ export class AppComponent implements OnInit, AfterViewInit  {
 
   onUndo() {
     if (this.history.canUndo) {
-      this.moveCard(this.history.currentDestination, this.history.currentSource);
+      this.moveCard(this.history.lastDestination, this.history.lastSource);
     }
   }
 
