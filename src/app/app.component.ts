@@ -22,10 +22,10 @@ export class AppComponent implements OnInit, AfterViewInit  {
   // з…мл…ника => земляника
   letters: Letter[] = [
     { value: 'з' },
-    { value: 'е', isHidden: true, alternatives: ['и', 'е'] },
+    { value: 'е', isHidden: true, alternatives: [ 'и', 'е', 'я', 'э', 'ы' ] },
     { value: 'м' },
     { value: 'л' },
-    { value: 'я', isHidden: true, alternatives: ['и', 'я'] },
+    { value: 'я', isHidden: true, alternatives: ['и', 'е', 'я'] },
     { value: 'н' },
     { value: 'и' },
     { value: 'к' },

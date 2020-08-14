@@ -2,8 +2,9 @@
   <div class="word">
     <span *ngFor="let l of letters;index as i" [class.active]="selection === i" [innerText]="l.isHidden ? '_' : (l.result || l.value)"></span>
   </div>
-  <ng-container *ngIf="letters[selection]?.alternatives as alts">
+  <button *ngFor="let altValue of letters[selection]?.alternatives" (click)="onAnswer(altValue)">{{altValue}}</button>
+  <!-- <ng-container *ngIf="letters[selection]?.alternatives as alts">
     <button class="btn-1" (click)="onAnswer(alts[0])">{{alts[0]}}</button>
     <button class="btn-2" (click)="onAnswer(alts[1])">{{alts[1]}}</button>
-  </ng-container>
+  </ng-container> -->
 </div>
