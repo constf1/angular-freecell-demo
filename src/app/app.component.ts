@@ -19,7 +19,6 @@ interface Letter {
 
 type Quiz = string[];
 
-
 /*
 1 класс:
 альбом, арбуз,
@@ -61,27 +60,40 @@ _вра_, _гурец,
 ябл_ко, яг_да, _зык.
 */
 
-const tests1: string[] = [
-  '(а|о)льбом', '(а|о)рбу(з|с)',
-  'б(а|о|э)р(а|о|э)бан', 'б(и|е|ы)лет',
-  'в(о|а)р(о|а|э)бей', 'в(о|а)рона',
-  'г(а|о)зета', 'гор(о|а|э)(д|т)',
-  'дев(о|а|)чка', 'д(е|и|э)журный', 'д(е|э|и)ревня',
-  'з(а|о)вод', 'за(я|й|е|э)ц',
-  'к(а|о)нава', 'к(а|о)пуста', 'к(а|о)р(а|о)нда(ш|ж)', 'к(а|о)рман', 'к(а|о)ртоф(е|и)ль', 'кла(сс|с|з|зз)', 'к(о|а)нц(е|э)рт', 'к(о|а)р(и|е)дор', 'к(о|а)рова',
+const grade1: string[] = [
+  "(а|о)льбом",
+  "(а|о)рбу(з|с)",
+  "б(а|о|э)р(а|о|э)бан",
+  "б(и|е|ы)лет",
+  "в(о|а)р(о|а|э)бей",
+  "в(о|а)рона",
+  "г(а|о)зета",
+  "гор(о|а|э)(д|т)",
+  "дев(о|а|)чка",
+  "д(е|и|э)журный",
+  "д(е|э|и)ревня",
+  "з(а|о)вод",
+  "за(я|й|е|э)ц",
+  "к(а|о)нава",
+  "к(а|о)пуста",
+  "к(а|о)р(а|о)нда(ш|ж)",
+  "к(а|о)рман",
+  "к(а|о)ртоф(е|и)ль",
+  "кла(сс|с|з|зз)",
+  "к(о|а)нц(е|э)рт",
+  "к(о|а)р(и|е)дор",
+  "к(о|а)рова"
 
-
-// ладонь,
-// машина, мебель, медведь, молоко, морковь, мороз,
-// овраг, огурец,
-// петух, платок, погода, помидор,
-// ребята, родина,
-// сапоги, сахар, собака, сорока,
-// тетрадь,
-// ученик, учитель,
-// хорошо,
-// яблоко, ягода, язык'`,
-
+  // ладонь,
+  // машина, мебель, медведь, молоко, морковь, мороз,
+  // овраг, огурец,
+  // петух, платок, погода, помидор,
+  // ребята, родина,
+  // сапоги, сахар, собака, сорока,
+  // тетрадь,
+  // ученик, учитель,
+  // хорошо,
+  // яблоко, ягода, язык'`,
 ];
 
 // д…журный
@@ -130,8 +142,8 @@ const words: Letter[][] = [
       value: "о",
       isHidden: true,
       alternatives: shuffle(["и", "е", "я", "э", "ы"])
-    },
-  ],
+    }
+  ]
 ];
 
 /* Randomize array in-place using Durstenfeld shuffle algorithm */
@@ -143,6 +155,10 @@ function shuffle<T>(arr: Array<T>): Array<T> {
     arr[j] = temp;
   }
   return arr;
+}
+
+function randomItem<T>(arr: Readonly<T[]>): T {
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
 @Component({
@@ -178,12 +194,31 @@ export class AppComponent implements OnInit, AfterViewInit {
     { value: "а" }
   ];
 
+  setQuiz(word: string) {
+    const regexp = /\([^)]+\)|./g;
+    this.letters = [];
+    for (let match; (match = regexp.exec(word)) !== null; ) {
+      const s = match[0];
+      if (s.length > 1) {
+        const arr = s.substring(1, s.length - 1).split('|');
+        this.letters.push({ value: arr[0], isHidden: true, alternatives: shuffle(arr)});
+      } else if (s.length === 1) {
+        this.letters.push({ value: s });
+      }
+    }
+    this.selection = this.letters.findIndex(i => i.isHidden);
+  }
+
   onAnswer(value: string) {
     const l = this.letters[this.selection];
     if (l) {
       l.result = value;
       l.isHidden = false;
       this.selection = this.letters.findIndex(i => i.isHidden);
+
+      if (this.selection < 0) {
+        this.setQuiz(randomItem(grade1));
+      }
     }
   }
 
