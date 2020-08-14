@@ -167,7 +167,6 @@ function randomItem<T>(arr: Readonly<T[]>): T {
   styleUrls: ["./app.component.scss"]
 })
 export class AppComponent implements OnInit, AfterViewInit {
-  alternatives = ["а", "о", "э", "и", "у", "ы", "е", "ю", "я"];
   selection = 1;
   letters: Letter[] = [
     { value: "з" },
@@ -193,6 +192,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     { value: "к" },
     { value: "а" }
   ];
+  words: Letter[][] = [ this.letters ];
 
   setQuiz(word: string) {
     const regexp = /\([^)]+\)|./g;
@@ -206,6 +206,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.letters.push({ value: s });
       }
     }
+    this.words.push(this.letters);
     this.selection = this.letters.findIndex(i => i.isHidden);
   }
 
@@ -222,13 +223,13 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
   }
 
-  isLetterValid(index: number) {
-    const l = this.letters[index];
-    if (l) {
-      return !l.result || l.value === l.result;
-    }
-    return false;
-  }
+  // isLetterValid(index: number) {
+  //   const l = this.letters[index];
+  //   if (l) {
+  //     return !l.result || l.value === l.result;
+  //   }
+  //   return false;
+  // }
 
   // @ViewChild('mainRef', {static: true}) mainRef: ElementRef<HTMLElement>;
   // @ViewChild(FreecellComponent, {static: false}) freecellComponent: FreecellComponent;

@@ -1,6 +1,10 @@
-<div class="board">
-  <div class="word">
-    <span *ngFor="let l of letters;index as i" [class.active]="selection === i" [class.invalid]="!isLetterValid(i)" [innerText]="l.isHidden ? '_' : (l.result || l.value)"></span>
-  </div>
-  <button *ngFor="let altValue of letters[selection]?.alternatives;trackBy:trackByIndex" (click)="onAnswer(altValue)">{{altValue}}</button>
+<div class="game">
+  <div class="board">
+    <div *ngFor="let w of words;last as isLast" class="word" [class.done]="!isLast">
+      <span *ngFor="let l of w;index as i"
+        [class.active]="isLast && selection === i"
+        [class.invalid]="l.result && l.value !== l.result" [innerText]="l.isHidden ? '_' : (l.result || l.value)"></span>
+    </div>
+	</div>
+	<button *ngFor="let altValue of letters[selection]?.alternatives;trackBy:trackByIndex" (click)="onAnswer(altValue)">{{altValue}}</button>
 </div>

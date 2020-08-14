@@ -14,7 +14,7 @@
   }
 }
 
-div.word {
+div.board {
   position: absolute;
   left: 172px;
   top: 98px;
@@ -23,13 +23,29 @@ div.word {
   width: 661px;
   height: 325px;
   background-color: #444;
-
   color: #eee;
 
-  text-align: center;
+  overflow: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+
+div.word {
+  // text-align: center;
   display: flex;
   justify-content: center;
   align-items: center;
+
+  &.done {
+    font-size: 20px;
+    &::after {
+      content: ",";
+      padding-right: 8px;
+    }
+  }
 
   > span {
     display: inline-block;
@@ -48,7 +64,7 @@ div.word {
   }
 }
 
-div.board {
+div.game {
   position: relative;
   width: 1024px;
   height: 768px;
