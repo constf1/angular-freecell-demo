@@ -8,8 +8,6 @@ div.word {
   height: 325px;
   background-color: #444;
 
-  font-family: 'Liberation Mono', monospace;
-  font-size: 80px;
   color: #eee;
 
   text-align: center;
@@ -28,6 +26,26 @@ div.board {
   height: 768px;
   background-color: darkslateblue;
   overflow: hidden;
+
+  font-family: 'Liberation Mono', monospace;
+  font-size: 80px;
+
+  > button {
+    position: absolute;
+    font: inherit;
+    height: 140px;
+    width: 140px;
+    border-radius: 70px;
+
+    &.btn-1 {
+      left: 166px;
+      top: 415px;
+    }
+    &.btn-2 {
+      left: 692px;
+      top: 415px;
+    }
+  }
 
   background-size: 100% 100%;
   background-repeat: no-repeat;
