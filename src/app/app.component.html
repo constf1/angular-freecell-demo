@@ -1,13 +1,3 @@
-<div class="main" #mainRef>
-  <app-ratio-keeper [width]="width" [height]="height" [ratio]="7/5">
-    <app-freecell [layout]="layout" [game]="game" (lineChange)="onLineChange($event)">
-      <button class="freecell top-left" (click)="onDeal()">DEAL</button>
-      <button class="freecell top-right" [disabled]="!nextMove" (click)="onAuto()"
-        [style.height.%]="100 * 0.75 * layout.deltaHeight / layout.height"
-      >AUTO</button>
-      <button class="freecell bottom-left" [disabled]="!history.canUndo" (click)="onUndo()">UNDO</button>
-      <button class="freecell bottom-right" [disabled]="!history.canRedo" (click)="onRedo()">REDO</button>
-    </app-freecell>
-  </app-ratio-keeper>
-  {{name + history.toURI()}}
+<div class="board">
+  app works!
 </div>
