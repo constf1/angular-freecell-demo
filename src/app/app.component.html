@@ -1,13 +1,7 @@
 <div class="board">
   <div class="word">
-    <span class="active">_</span>
-    <span>л</span>
-    <span>ф</span>
-    <span>_</span>
-    <span>в</span>
-    <span>и́</span>
-    <span>т</span>
+    <span *ngFor="let l of letters;index as i" [class.active]="selection === i" [innerText]="l.isHidden ? '_' : l.value"></span>
   </div>
-  <button class="btn-1">а</button>
-  <button class="btn-2">б</button>
+  <button class="btn-1" (click)="onAnswer('а')">а</button>
+  <button class="btn-2" (click)="onAnswer('о')">о</button>
 </div>

@@ -55,6 +55,7 @@ div.board {
   font-size: 80px;
 
   > button {
+    cursor: pointer;
     position: absolute;
     font: inherit;
     height: 140px;
