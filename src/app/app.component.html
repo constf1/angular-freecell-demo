@@ -1,6 +1,6 @@
 <div class="game">
   <div class="board">
-    <div *ngFor="let w of words;last as isLast" class="word" [class.done]="!isLast">
+    <div *ngFor="let w of words;last as isLast;trackBy:trackByIndex" class="word" [class.done]="!isLast" [class.last]="isLast">
       <span *ngFor="let l of w;index as i"
         [class.active]="isLast && selection === i"
         [class.invalid]="l.result && l.value !== l.result" [innerText]="l.isHidden ? '_' : (l.result || l.value)"></span>

@@ -197,13 +197,24 @@ export class AppComponent implements OnInit, AfterViewInit {
   setQuiz(word: string) {
     const regexp = /\([^)]+\)|./g;
     this.letters = [];
+    let count = 0;
     for (let match; (match = regexp.exec(word)) !== null; ) {
       const s = match[0];
       if (s.length > 1) {
         const arr = s.substring(1, s.length - 1).split('|');
         this.letters.push({ value: arr[0], isHidden: true, alternatives: shuffle(arr)});
+        count++;
       } else if (s.length === 1) {
         this.letters.push({ value: s });
+      }
+    }
+    // Hide only one random letter. Otherwise it is very difficult to guess the word.
+    if (count > 1) {
+      const i = Math.floor(Math.random() * count);
+      for (const l of this.letters) {
+        if (l.isHidden) {
+          l.isHidden = (--count === i);
+        }
       }
     }
     this.words.push(this.letters);
