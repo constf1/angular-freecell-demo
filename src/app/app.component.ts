@@ -6,6 +6,8 @@ import { Autoplay } from '../common/autoplay'
 interface Letter {
   value: string;
   isHidden?: boolean;
+  result?: string;
+  alternatives?: string[];
 }
 
 @Component({
@@ -14,21 +16,26 @@ interface Letter {
   styleUrls: [ './app.component.scss' ]
 })
 export class AppComponent implements OnInit, AfterViewInit  {
-  selection = 0;
+  alternatives = [ 'а', 'о', 'э', 'и', 'у', 'ы', 'е', 'ю', 'я'];
+  selection = 1;
+  // а, о, э, и, у, ы, е, ю, я
+  // з…мл…ника => земляника
   letters: Letter[] = [
-    { value: 'а', isHidden: true },
+    { value: 'з' },
+    { value: 'е', isHidden: true, alternatives: ['и', 'е'] },
+    { value: 'м' },
     { value: 'л' },
-    { value: 'ф' },
-    { value: 'а', isHidden: true },
-    { value: 'в' },
+    { value: 'я', isHidden: true, alternatives: ['и', 'я'] },
+    { value: 'н' },
     { value: 'и' },
-    { value: 'т' },
+    { value: 'к' },
+    { value: 'а' },
   ];
 
   onAnswer(value: string) {
     const l = this.letters[this.selection];
     if (l) {
-      l.value = value;
+      l.result = value;
       l.isHidden = false;
       this.selection = this.letters.findIndex(i => i.isHidden);
     }
