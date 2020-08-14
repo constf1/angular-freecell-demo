@@ -6,7 +6,20 @@ div.word {
 
   width: 661px;
   height: 325px;
-  background-color: #4444;
+  background-color: #444;
+
+  font-family: 'Liberation Mono', monospace;
+  font-size: 80px;
+  color: #eee;
+
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  > span {
+    display: inline-block;
+  }
 }
 
 div.board {
