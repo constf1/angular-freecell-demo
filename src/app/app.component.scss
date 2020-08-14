@@ -41,6 +41,10 @@ div.word {
       animation-name: animation-heartbeat;
       // animation-fill-mode: forwards;
     }
+
+    &.invalid {
+      color: #f44;
+    }
   }
 }
 
