@@ -1,3 +1,19 @@
+@keyframes animation-heartbeat
+{
+  0% {
+    opacity: 1;
+  }
+  40% {
+    opacity: 1;
+  }
+  43% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 div.word {
   position: absolute;
   left: 172px;
@@ -17,6 +33,14 @@ div.word {
 
   > span {
     display: inline-block;
+
+    &.active {
+      animation-timing-function: linear;
+      animation-duration: 2s;
+      animation-iteration-count: infinite;
+      animation-name: animation-heartbeat;
+      // animation-fill-mode: forwards;
+    }
   }
 }
 
