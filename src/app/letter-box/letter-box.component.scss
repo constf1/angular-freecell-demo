@@ -25,11 +25,13 @@ div.letter-box {
 
     &::after {
       color: red;
-      content: ">";
+      // content: ">";
+      content: "∨";
       position: absolute;
-      left: -0.05 * $x;
       top: 0.5 * $x;
-      transform: rotateZ(90deg);
+      left: 0;
+      // left: -0.05 * $x;
+      // transform: rotateZ(90deg);
     }
   }
 }
