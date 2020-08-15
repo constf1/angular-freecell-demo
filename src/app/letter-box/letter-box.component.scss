@@ -1,4 +1,4 @@
-$x: 40px;
+$x: 32px;
 
 div.letter-box {
   position: relative;
@@ -20,8 +20,8 @@ div.letter-box {
   > span.letter-box-stick-answer {
     color:red;
     position: absolute;
-    left: -0.4 * $x;
-    top: -1.8 * $x;
+    left: -0.3 * $x;
+    top: -1.95 * $x;
 
     &::after {
       color: red;

@@ -8,6 +8,7 @@ import { Component, OnInit, Input } from '@angular/core';
 export class LetterBoxComponent implements OnInit {
   @Input() letter = '';
   @Input() correction = '';
+  // @Input() showAnswer = false;
 
   constructor() { }
 
