@@ -1,10 +1,11 @@
 <div class="game">
   <div class="board">
-    <div *ngFor="let w of words;last as isLast;trackBy:trackByIndex" class="word" [class.done]="!isLast" [class.last]="isLast">
-      <span *ngFor="let l of w;index as i"
+    <div *ngFor="let quiz of words;last as isLast;trackBy:trackByIndex" class="word" [class.done]="!isLast" [class.last]="isLast">
+      <app-letter-box *ngFor="let q of quiz;index as i" [letter]="q.answer" [correction]="q.isError ? q.value : q.answer"></app-letter-box>
+      <!-- <span *ngFor="let l of w;index as i"
         [class.active]="isLast && selection === i"
-        [class.invalid]="l.result && l.value !== l.result" [innerText]="l.isHidden ? '_' : (l.result || l.value)"></span>
+        [class.invalid]="l.result && l.value !== l.result" [innerText]="l.isHidden ? '_' : (l.result || l.value)"></span> -->
     </div>
 	</div>
-	<button *ngFor="let altValue of letters[selection]?.alternatives;trackBy:trackByIndex" (click)="onAnswer(altValue)">{{altValue}}</button>
+	<button *ngFor="let q of letters[selection]?.questions;trackBy:trackByIndex" (click)="onAnswer(q)">{{q}}</button>
 </div>

@@ -1,0 +1,18 @@
+div.letter-box {
+  position: relative;
+  display: inline-block;
+
+  > span.letter-box-wrong-answer::after {
+    color: red;
+    content: "/";
+    position: absolute;
+    left:1%;
+    top:5%;
+  }
+  > span.letter-box-right-answer {
+    color:red;
+    position: absolute;
+    left:0;
+    top:-50%;
+  }
+}

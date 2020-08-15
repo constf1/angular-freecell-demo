@@ -17,7 +17,12 @@ interface Letter {
   alternatives?: string[];
 }
 
-type Quiz = string[];
+interface Quiz {
+  value: string;
+  answer: string;
+  questions?: string[];
+  isError?: boolean;
+}
 
 /*
 1 класс:
@@ -108,43 +113,6 @@ const grade1: string[] = [
 // м…две…
 // м…л…ко
 // …зык
-const words: Letter[][] = [
-  [
-    { value: "з" },
-    {
-      value: "е",
-      isHidden: true,
-      alternatives: shuffle(["и", "е", "я", "э", "ы"])
-    },
-    { value: "м" },
-    { value: "л" },
-    {
-      value: "я",
-      isHidden: true,
-      alternatives: shuffle(["и", "е", "я", "э", "ы"])
-    },
-    { value: "н" },
-    { value: "и" },
-    { value: "к" },
-    { value: "а" }
-  ],
-  [
-    { value: "в" },
-    { value: "е" },
-    { value: "с" },
-    {
-      value: "е",
-      isHidden: true,
-      alternatives: shuffle(["и", "е", "я", "э", "ы"])
-    },
-    { value: "л" },
-    {
-      value: "о",
-      isHidden: true,
-      alternatives: shuffle(["и", "е", "я", "э", "ы"])
-    }
-  ]
-];
 
 /* Randomize array in-place using Durstenfeld shuffle algorithm */
 function shuffle<T>(arr: Array<T>): Array<T> {
@@ -168,31 +136,8 @@ function randomItem<T>(arr: Readonly<T[]>): T {
 })
 export class AppComponent implements OnInit, AfterViewInit {
   selection = 1;
-  letters: Letter[] = [
-    { value: "з" },
-    {
-      value: "е",
-      isHidden: true,
-      alternatives: shuffle(["и", "е", "я", "э", "ы"])
-    },
-    { value: "м" },
-    {
-      value: "",
-      isHidden: true,
-      alternatives: shuffle(["ъ", "ь", ""])
-    },
-    { value: "л" },
-    {
-      value: "я",
-      isHidden: true,
-      alternatives: shuffle(["и", "е", "я", "э", "ы"])
-    },
-    { value: "н" },
-    { value: "и" },
-    { value: "к" },
-    { value: "а" }
-  ];
-  words: Letter[][] = [ this.letters ];
+  letters: Quiz[];
+  words: Quiz[][] = [];
 
   setQuiz(word: string) {
     const regexp = /\([^)]+\)|./g;
@@ -201,32 +146,37 @@ export class AppComponent implements OnInit, AfterViewInit {
     for (let match; (match = regexp.exec(word)) !== null; ) {
       const s = match[0];
       if (s.length > 1) {
-        const arr = s.substring(1, s.length - 1).split('|');
-        this.letters.push({ value: arr[0], isHidden: true, alternatives: shuffle(arr)});
+        const arr = s.substring(1, s.length - 1).split("|");
+        this.letters.push({ value: arr[0], answer: '_', questions: shuffle(arr) });
         count++;
       } else if (s.length === 1) {
-        this.letters.push({ value: s });
+        this.letters.push({ value: s, answer: s });
       }
     }
-    // Hide only one random letter. Otherwise it is very difficult to guess the word.
+    // Enable only one random letter. Otherwise it is very difficult to guess the word.
     if (count > 1) {
       const i = Math.floor(Math.random() * count);
       for (const l of this.letters) {
-        if (l.isHidden) {
-          l.isHidden = (--count === i);
+        if (l.questions && --count !== i) {
+          l.questions = null;
+          l.answer = l.value;
         }
       }
     }
     this.words.push(this.letters);
-    this.selection = this.letters.findIndex(i => i.isHidden);
+    this.selectNext();
+  }
+
+  selectNext() {
+    this.selection = this.letters.findIndex(i => i.answer === '_');
   }
 
   onAnswer(value: string) {
     const l = this.letters[this.selection];
     if (l) {
-      l.result = value;
-      l.isHidden = false;
-      this.selection = this.letters.findIndex(i => i.isHidden);
+      l.answer = value;
+      l.isError = value !== l.value;
+      this.selectNext();
 
       if (this.selection < 0) {
         this.setQuiz(randomItem(grade1));
@@ -253,7 +203,9 @@ export class AppComponent implements OnInit, AfterViewInit {
   //   }
   // }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.setQuiz("з(е|и|я|э|ы)м(|ъ|ь)л(я|и|е|э|ы)ника");
+  }
 
   ngAfterViewInit() {}
 
