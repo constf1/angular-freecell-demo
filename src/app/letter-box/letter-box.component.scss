@@ -6,13 +6,28 @@ div.letter-box {
     color: red;
     content: "/";
     position: absolute;
-    left:1%;
-    top:5%;
+    left:0.01rem;
+    top:0.05rem;
   }
   > span.letter-box-right-answer {
     color:red;
     position: absolute;
-    left:0;
-    top:-50%;
+    left: 0;
+    top: -1rem;
+  }
+  > span.letter-box-stick-answer {
+    color:red;
+    position: absolute;
+    left: -0.45rem;
+    top: -2.3rem;
+
+    &::after {
+      color: red;
+      content: ">";
+      position: absolute;
+      left: -0.1rem;
+      top: 0.55rem;
+      transform: rotateZ(90deg);
+    }
   }
 }

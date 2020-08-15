@@ -1,10 +1,16 @@
-<ng-template #correctLetter>
+<ng-template #templateRightAnswer>
   <span [innerText]="letter"></span>
 </ng-template>
 
+<ng-template #templateWrongAnswer>
+  <span class="letter-box-wrong-answer" [innerText]="letter"></span>
+  <span class="letter-box-right-answer" [innerText]="correction"></span>
+</ng-template>
+
 <div class="letter-box">
-  <ng-container *ngIf="correction !== letter; else correctLetter">
-    <span class="letter-box-wrong-answer" [innerText]="letter"></span>
-    <span class="letter-box-right-answer" [innerText]="correction"></span>
+  <ng-container *ngIf="correction !== letter; else templateRightAnswer">
+    <ng-container *ngIf="!letter;else templateWrongAnswer">
+      <span class="letter-box-stick-answer" [innerText]="correction"></span>
+    </ng-container>
   </ng-container>
 </div>
