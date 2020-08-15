@@ -1,3 +1,5 @@
+$x: 40px;
+
 div.letter-box {
   position: relative;
   display: inline-block;
@@ -6,27 +8,27 @@ div.letter-box {
     color: red;
     content: "/";
     position: absolute;
-    left:0.01rem;
-    top:0.05rem;
+    left: 0;
+    top: 0.1 * $x;
   }
   > span.letter-box-right-answer {
     color:red;
     position: absolute;
     left: 0;
-    top: -1rem;
+    top: -0.8 * $x;
   }
   > span.letter-box-stick-answer {
     color:red;
     position: absolute;
-    left: -0.45rem;
-    top: -2.3rem;
+    left: -0.4 * $x;
+    top: -1.8 * $x;
 
     &::after {
       color: red;
       content: ">";
       position: absolute;
-      left: -0.1rem;
-      top: 0.55rem;
+      left: -0.05 * $x;
+      top: 0.5 * $x;
       transform: rotateZ(90deg);
     }
   }

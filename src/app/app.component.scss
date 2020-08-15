@@ -14,6 +14,8 @@
   }
 }
 
+$x: 40px;
+
 div.board {
   position: absolute;
   left: 175px;
@@ -23,8 +25,9 @@ div.board {
   width: 661px;
   height: 325px;
 
-  padding: 12px;
-  line-height: 32px;
+  padding-top: 0.3 * $x;
+  padding-left: 0.2 * $x;
+  line-height: 1.8 * $x;
 
   // background-color: #444;
   color: #eee;
@@ -44,10 +47,10 @@ div.word {
   align-items: center;
 
   &.done {
-    font-size: 20px;
+    font-size: $x;
     &::after {
       content: ",";
-      padding-right: 8px;
+      padding-right: 0.2 * $x;
     }
   }
 
